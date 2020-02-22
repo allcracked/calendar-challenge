@@ -1,0 +1,2 @@
+export const SAVE_LOGGED_USER_DATA = '@loggedUser/SAVE_LOGGED_USER_DATA';
+export const CLEAN_LOGGED_USER_DATA = '@loggedUser/CLEAN_LOGGED_USER_DATA';
