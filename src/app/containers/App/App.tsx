@@ -2,46 +2,48 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import firebase from 'firebase/app';
 import { Provider } from 'react-redux';
+import { Switch, Route } from 'react-router-dom';
+import { ConnectedRouter } from 'connected-react-router';
 
 import { firebaseAuth } from '../../modules/Firebase/FirebaseApp';
 import configureStore from '../../store';
 import { LoggedUser } from '../../store/LoggedUser/LoggedUserInterface';
 import { saveLoggedUserData, cleanLoggedUserData } from '../../store/LoggedUser/LoggerUserActions';
+import history from '../../modules/History/BrowserHistory';
 
 import Login from '../Login/Login';
+import Loader from '../../components/Loader/Loader';
+import Calendar from '../Calendar/Calendar';
 
 import '../../../static/global.scss';
-import styles from './App.module.scss';
 
 const store = configureStore();
 
 const App: React.FC = () => {
-    const login = (): void => {
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
-        firebaseAuth.signInWithPopup(googleProvider);
-    };
-
-    const logout = (): void => {
-        firebaseAuth.signOut();
-    };
-
     return (
         <div>
-            <h1>Hello there!</h1>
-            <p className={styles.paragraph}>This is a paragraph.</p>
-            <button type="button" onClick={login}>
-                Login
-            </button>
-            <button type="button" onClick={logout}>
-                Logout
-            </button>
-            <Login />
+            <p>Jobsity Calendar</p>
         </div>
     );
 };
 
+const renderApp = (): void => {
+    ReactDOM.render(
+        <Provider store={store}>
+            <ConnectedRouter history={history}>
+                <Switch>
+                    <Route exact path="/" component={App} />
+                    <Route path="/login" component={Login} />
+                    <Route path="/home" component={Calendar} />
+                    <Route component={App} />
+                </Switch>
+            </ConnectedRouter>
+        </Provider>,
+        document.querySelector('#app'),
+    );
+};
+
 firebaseAuth.onAuthStateChanged((firebaseUser: firebase.User) => {
-    console.log({ firebaseUser });
     if (firebaseUser) {
         const loggedUserData: LoggedUser = {
             name: firebaseUser.displayName,
@@ -52,14 +54,13 @@ firebaseAuth.onAuthStateChanged((firebaseUser: firebase.User) => {
         };
 
         store.dispatch(saveLoggedUserData(loggedUserData));
+        renderApp();
+        history.push('/home');
     } else {
         store.dispatch(cleanLoggedUserData());
+        renderApp();
+        history.push('/login');
     }
 });
 
-ReactDOM.render(
-    <Provider store={store}>
-        <App />
-    </Provider>,
-    document.querySelector('#app'),
-);
+ReactDOM.render(<Loader />, document.querySelector('#app'));
