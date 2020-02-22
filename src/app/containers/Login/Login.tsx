@@ -8,6 +8,6 @@ const Login: React.FC = () => {
             <p className={styles.para}>This is a login page.</p>
         </div>
     );
-}
+};
 
 export default Login;

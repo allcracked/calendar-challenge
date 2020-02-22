@@ -1,0 +1,7 @@
+# Ignoring built and modules files
+node_modules
+build
+
+# Ignoring project files
+webpack.config.js
+src/**/*scss.d.ts
