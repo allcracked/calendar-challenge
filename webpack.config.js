@@ -2,12 +2,13 @@ const webpack =require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const DotenvWebpack = require('dotenv-webpack');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const webpackConfig = {
     mode: isDevelopment ? 'development' : 'production',
-    devtool: "inline-source-map",
+    devtool: "eval-source-map",
     entry: {
         app: path.join(__dirname, './src/app/containers/App/App.tsx'),
 
@@ -48,6 +49,10 @@ const webpackConfig = {
         }),
 
         new webpack.WatchIgnorePlugin([/css\.d\.ts$/]),
+
+        new DotenvWebpack({
+            path:  path.join(__dirname, `./.env`)
+        }),
     ],
 
     module: {

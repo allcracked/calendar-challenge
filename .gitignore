@@ -6,3 +6,4 @@ build
 
 # Misc files and folders
 .eslintcache
+.env
