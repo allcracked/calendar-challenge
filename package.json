@@ -1,12 +1,35 @@
 {
   "name": "calendar-challenge",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Code challenge for Jobsity.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allcracked/calendar-challenge.git"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack-dev-server --mode development",
+    "watch": "NODE_ENV=development webpack --mode development --config webpack.config.js --watch",
+    "build": "NODE_ENV=production webpack --mode production --config webpack.config.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Jose Avilez",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "@babel/preset-react": "^7.8.3",
+    "@types/react": "^16.9.22",
+    "@types/react-dom": "^16.9.5",
+    "dotenv-webpack": "^1.7.0",
+    "html-webpack-plugin": "^3.2.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.2",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
 }
