@@ -1,5 +1,7 @@
+const webpack =require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -15,11 +17,12 @@ const webpackConfig = {
         filename: "[name].js"
     },
     resolve: {
-        extensions: ["*", ".js", ".ts", ".tsx"]
+        extensions: ["*", ".js", ".ts", ".tsx", ".scss"]
     },
     watchOptions: {
         aggregateTimeout: 300,
-        poll: 1000
+        poll: 1000,
+        ignored: '/node_modules/'
     },
     devServer: {
         contentBase: path.join(__dirname, 'build'),
@@ -38,6 +41,13 @@ const webpackConfig = {
             template: './src/static/index.html',
             hash: true
         }),
+
+        new MiniCssExtractPlugin({
+            filename: '[name].css',
+            chunkFilename: '[id].css'
+        }),
+
+        new webpack.WatchIgnorePlugin([/css\.d\.ts$/]),
     ],
 
     module: {
@@ -48,6 +58,39 @@ const webpackConfig = {
                 use: [
                     {
                         loader: "ts-loader"
+                    }
+                ]
+            },
+            {
+                test: /\.module\.s?css$/i,
+                include: path.join(__dirname, 'src'),
+                use: [
+                    isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    {
+                        loader: '@teamsupercell/typings-for-css-modules-loader'
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true
+                        }
+                    },
+                    {
+                        loader: 'sass-loader'
+                    }
+                ]
+            },
+            {
+                test: /\.s?css$/i,
+                include: path.join(__dirname, 'src'),
+                exclude: /\.module\.s?css$/,
+                use: [
+                    isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader'
+                    },
+                    {
+                        loader: 'sass-loader'
                     }
                 ]
             },
