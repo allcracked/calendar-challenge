@@ -43,6 +43,7 @@ const thunkGetRemaindersData = (userId: string, month: number) => async (dispatc
     const remaindersSavingData: RemaindersState = {
         remainders: remaindersData,
         mappedRemainders,
+        usingMonth: month,
     };
     dispatch(saveRemaindersData(remaindersSavingData));
 };

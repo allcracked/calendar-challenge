@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import firebase from 'firebase/app';
 import { Provider } from 'react-redux';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Router } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 
 import { firebaseAuth } from '../../modules/Firebase/FirebaseApp';
@@ -14,6 +14,7 @@ import history from '../../modules/History/BrowserHistory';
 import Login from '../Login/Login';
 import Loader from '../../components/Loader/Loader';
 import Home from '../Home/Home';
+import DayView from '../DayView/DayView';
 
 import '../../../static/global.scss';
 
@@ -33,6 +34,7 @@ const renderApp = (): void => {
                     <Route exact path="/" component={App} />
                     <Route path="/login" component={Login} />
                     <Route path="/home" component={Home} />
+                    <Route path="/day/:date" render={props => <DayView day={props.match.params.date} />} />
                 </Switch>
             </ConnectedRouter>
         </Provider>,

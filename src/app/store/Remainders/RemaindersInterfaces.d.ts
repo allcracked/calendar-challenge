@@ -24,4 +24,5 @@ export interface RemainderMap extends Array<Array<string>> {
 export interface RemaindersState {
     remainders: RemainderObject;
     mappedRemainders: RemainderMap;
+    usingMonth: number;
 }

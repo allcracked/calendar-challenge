@@ -1,8 +1,14 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../store';
+import history from '../../modules/History/BrowserHistory';
+
+import { WeekCalendar, DayCalendar } from './CalendarInterface';
+
+import DayView from '../../containers/DayView/DayView';
 
 interface Props {
     month?: number;
@@ -13,10 +19,10 @@ const Calendar: React.FC<Props> = (props: Props) => {
     const { month } = props;
     const monthToUse = month || moment().month();
 
-    const [fullCalendar, setFullCalendar] = useState([]);
+    const [fullCalendar, setFullCalendar] = useState<Array<WeekCalendar>>([]);
 
     const buildFullCalendar = (): void => {
-        const calendarView = [];
+        const calendarView: Array<WeekCalendar> = [];
         let weekCounter = 0;
         let dayNumberInWeek = 0;
 
@@ -28,7 +34,7 @@ const Calendar: React.FC<Props> = (props: Props) => {
                     .format('d'),
             );
 
-            const dayRemainders = {
+            const dayRemainders: DayCalendar = {
                 remainders: remaindersData.mappedRemainders[j],
                 dayNumber: j,
                 dayName: moment()
@@ -39,6 +45,10 @@ const Calendar: React.FC<Props> = (props: Props) => {
                     .month(monthToUse)
                     .date(j)
                     .format('MMMM'),
+                fullDate: moment()
+                    .month(monthToUse)
+                    .date(j)
+                    .format('MM-DD-YYYY'),
             };
 
             if (!calendarView[weekCounter]) calendarView[weekCounter] = [];
@@ -55,7 +65,7 @@ const Calendar: React.FC<Props> = (props: Props) => {
         let backCounter = 0;
 
         for (let k = startDate - 1; k >= 0; k -= 1) {
-            const dayRemainders = {
+            const dayRemainders: DayCalendar = {
                 dayNumber: Number(
                     moment()
                         .month(monthToUse)
@@ -70,6 +80,10 @@ const Calendar: React.FC<Props> = (props: Props) => {
                     .month(monthToUse)
                     .date(backCounter)
                     .format('MMMM'),
+                fullDate: moment()
+                    .month(monthToUse)
+                    .date(backCounter)
+                    .format('MM-DD-YYYY'),
             };
             calendarView[0][k] = dayRemainders;
             backCounter -= 1;
@@ -90,7 +104,7 @@ const Calendar: React.FC<Props> = (props: Props) => {
         let forwardCounter = endMonthDay;
 
         for (let m = endDate; m < 7; m += 1) {
-            const dayRemainders = {
+            const dayRemainders: DayCalendar = {
                 dayNumber: Number(
                     moment()
                         .month(monthToUse)
@@ -105,6 +119,10 @@ const Calendar: React.FC<Props> = (props: Props) => {
                     .month(monthToUse)
                     .date(forwardCounter)
                     .format('MMMM'),
+                fullDate: moment()
+                    .month(monthToUse)
+                    .date(forwardCounter)
+                    .format('MM-DD-YYYY'),
             };
 
             if (!calendarView[calendarView.length - 1][m]) calendarView[calendarView.length - 1][m] = dayRemainders;
@@ -112,6 +130,10 @@ const Calendar: React.FC<Props> = (props: Props) => {
         }
 
         setFullCalendar(calendarView);
+    };
+
+    const handleSelection = (selectedDay: DayCalendar) => {
+        history.push(`/day/${selectedDay.fullDate}`);
     };
 
     useEffect(() => {
@@ -127,15 +149,20 @@ const Calendar: React.FC<Props> = (props: Props) => {
                     .format('MMMM YYYY')}
             </h4>
             <div>
-                {fullCalendar.map((calendarWeek, index) => {
+                {fullCalendar.map((calendarWeek: WeekCalendar, index) => {
                     return (
                         <p key={index}>
-                            {calendarWeek.map((calendarDay: any, indexDay: number) => {
+                            {calendarWeek.map((calendarDay: DayCalendar, indexDay: number) => {
                                 return (
-                                    <span key={indexDay}>
+                                    <button
+                                        type="button"
+                                        key={indexDay}
+                                        value={calendarDay.dayNumber}
+                                        onClick={() => handleSelection(calendarDay)}
+                                    >
                                         {calendarDay.dayNumber}
                                         &nbsp;
-                                    </span>
+                                    </button>
                                 );
                             })}
                         </p>
