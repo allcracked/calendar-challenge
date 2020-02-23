@@ -2,7 +2,7 @@ import { handleActions } from 'redux-actions';
 
 import loggedUserInitialState from './LoggedUserState';
 import { SAVE_LOGGED_USER_DATA, CLEAN_LOGGED_USER_DATA } from './LoggedUserTypes';
-import { ActionsPayloadType } from './LoggerUserActions';
+import { ActionsPayloadType } from './LoggedUserActions';
 import { LoggedUser, LoggedUserState } from './LoggedUserInterface';
 
 const loggedUserReducer = handleActions<LoggedUserState, ActionsPayloadType>(

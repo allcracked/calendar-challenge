@@ -6,9 +6,9 @@ import { Switch, Route } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 
 import { firebaseAuth } from '../../modules/Firebase/FirebaseApp';
-import configureStore from '../../store';
+import store from '../../store';
 import { LoggedUser } from '../../store/LoggedUser/LoggedUserInterface';
-import { saveLoggedUserData, cleanLoggedUserData } from '../../store/LoggedUser/LoggerUserActions';
+import { saveLoggedUserData, cleanLoggedUserData } from '../../store/LoggedUser/LoggedUserActions';
 import history from '../../modules/History/BrowserHistory';
 
 import Login from '../Login/Login';
@@ -16,8 +16,6 @@ import Loader from '../../components/Loader/Loader';
 import Calendar from '../Calendar/Calendar';
 
 import '../../../static/global.scss';
-
-const store = configureStore();
 
 const App: React.FC = () => {
     return (
@@ -35,7 +33,6 @@ const renderApp = (): void => {
                     <Route exact path="/" component={App} />
                     <Route path="/login" component={Login} />
                     <Route path="/home" component={Calendar} />
-                    <Route component={App} />
                 </Switch>
             </ConnectedRouter>
         </Provider>,

@@ -1,0 +1,2 @@
+export const SAVE_REMAINDERS_DATA = '@remainders/SAVE_REMAINDERS_DATA';
+export const CLEAN_REMAINDERS_DATA = '@remainders/CLEAN_REMAINDERS_DATA';
