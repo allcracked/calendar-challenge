@@ -23,6 +23,7 @@ module.exports = {
         'react/jsx-indent': ['error', 4],
         'react/jsx-indent-props': ['off'],
         'import/extensions': ['off'],
+        'class-methods-use-this': ['off'],
     },
     env: {
         browser: true,

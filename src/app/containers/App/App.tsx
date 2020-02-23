@@ -2,22 +2,21 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import firebase from 'firebase/app';
 import { Provider } from 'react-redux';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Router } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 
 import { firebaseAuth } from '../../modules/Firebase/FirebaseApp';
-import configureStore from '../../store';
+import store from '../../store';
 import { LoggedUser } from '../../store/LoggedUser/LoggedUserInterface';
-import { saveLoggedUserData, cleanLoggedUserData } from '../../store/LoggedUser/LoggerUserActions';
+import { saveLoggedUserData, cleanLoggedUserData } from '../../store/LoggedUser/LoggedUserActions';
 import history from '../../modules/History/BrowserHistory';
 
 import Login from '../Login/Login';
 import Loader from '../../components/Loader/Loader';
-import Calendar from '../Calendar/Calendar';
+import Home from '../Home/Home';
+import DayView from '../DayView/DayView';
 
 import '../../../static/global.scss';
-
-const store = configureStore();
 
 const App: React.FC = () => {
     return (
@@ -34,8 +33,8 @@ const renderApp = (): void => {
                 <Switch>
                     <Route exact path="/" component={App} />
                     <Route path="/login" component={Login} />
-                    <Route path="/home" component={Calendar} />
-                    <Route component={App} />
+                    <Route path="/home" component={Home} />
+                    <Route path="/day/:date" render={props => <DayView day={props.match.params.date} />} />
                 </Switch>
             </ConnectedRouter>
         </Provider>,
