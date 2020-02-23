@@ -6,7 +6,9 @@ import { firebaseAuth } from '../../modules/Firebase/FirebaseApp';
 import { AppState } from '../../store';
 import thunkGetRemaindersData from '../../store/Remainders/RemaindersThunks';
 
-const Calendar: React.FC = () => {
+import Calendar from '../../components/Calendar/Calendar';
+
+const Home: React.FC = () => {
     const userData = useSelector((state: AppState) => state.loggedUser.userData);
     const remaindersData = useSelector((state: AppState) => state.remainders);
     const dispatch = useDispatch();
@@ -21,18 +23,8 @@ const Calendar: React.FC = () => {
 
     return (
         <div>
-            <h1>Calendar</h1>
-            <ul>
-                {remaindersData.mappedRemainders.map((day): JSX.Element[] => {
-                    if (day.length > 0) {
-                        return day.map(remainder => {
-                            const remainderInfo = remaindersData.remainders[remainder];
-                            return <li key={remainder}>{remainderInfo.content}</li>;
-                        });
-                    }
-                    return null;
-                })}
-            </ul>
+            <h1>Home</h1>
+            <Calendar />
 
             <button type="button" onClick={logout}>
                 Logout
@@ -41,4 +33,4 @@ const Calendar: React.FC = () => {
     );
 };
 
-export default Calendar;
+export default Home;

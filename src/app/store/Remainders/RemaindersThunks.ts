@@ -1,12 +1,30 @@
 import { Dispatch } from 'redux';
 import moment from 'moment';
 
-import { RemaindersState, RemainderObject } from './RemaindersInterfaces';
+import { RemaindersState, RemainderObject, RemainderMap } from './RemaindersInterfaces';
 import { saveRemaindersData } from './RemaindersActions';
 import RemaindersDAO from '../../modules/DAO/Remainders/Remainders';
 
-function mapRemaindersByDay(rawRemainders: RemainderObject): Array<Array<string>> {
-    const mappedRemainders: Array<Array<string>> = [];
+function initializeRemaindersMap(month: number): RemainderMap {
+    const monthStarts = moment()
+        .month(month)
+        .startOf('month')
+        .date();
+    const monthEnds = moment()
+        .month(month)
+        .endOf('month')
+        .date();
+
+    const calendarDaysArray: RemainderMap = [];
+    for (let i: number = monthStarts; i <= monthEnds; i += 1) {
+        calendarDaysArray[i] = [];
+    }
+
+    return calendarDaysArray;
+}
+
+function mapRemaindersByDay(rawRemainders: RemainderObject, month: number): RemainderMap {
+    const mappedRemainders: RemainderMap = initializeRemaindersMap(month);
     const remaindersArray = Object.entries(rawRemainders);
 
     remaindersArray.forEach(remainder => {
@@ -20,7 +38,7 @@ function mapRemaindersByDay(rawRemainders: RemainderObject): Array<Array<string>
 
 const thunkGetRemaindersData = (userId: string, month: number) => async (dispatch: Dispatch): Promise<void> => {
     const remaindersData: RemainderObject = await RemaindersDAO.getMonthUserRemainders(userId, month);
-    const mappedRemainders: Array<Array<string>> = mapRemaindersByDay(remaindersData);
+    const mappedRemainders: RemainderMap = mapRemaindersByDay(remaindersData, month);
 
     const remaindersSavingData: RemaindersState = {
         remainders: remaindersData,

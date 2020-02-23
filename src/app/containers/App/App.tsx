@@ -13,7 +13,7 @@ import history from '../../modules/History/BrowserHistory';
 
 import Login from '../Login/Login';
 import Loader from '../../components/Loader/Loader';
-import Calendar from '../Calendar/Calendar';
+import Home from '../Home/Home';
 
 import '../../../static/global.scss';
 
@@ -32,7 +32,7 @@ const renderApp = (): void => {
                 <Switch>
                     <Route exact path="/" component={App} />
                     <Route path="/login" component={Login} />
-                    <Route path="/home" component={Calendar} />
+                    <Route path="/home" component={Home} />
                 </Switch>
             </ConnectedRouter>
         </Provider>,

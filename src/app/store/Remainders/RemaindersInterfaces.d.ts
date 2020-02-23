@@ -17,7 +17,11 @@ export interface RemainderObject {
     [index: string]: RemainderInterface;
 }
 
+export interface RemainderMap extends Array<Array<string>> {
+    [index: number]: Array<string>;
+}
+
 export interface RemaindersState {
     remainders: RemainderObject;
-    mappedRemainders: Array<Array<string>>;
+    mappedRemainders: RemainderMap;
 }
