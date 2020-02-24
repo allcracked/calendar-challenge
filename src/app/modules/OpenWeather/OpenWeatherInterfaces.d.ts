@@ -47,7 +47,7 @@ export interface OpenWeatherListSys {
 export interface OpenWeatherList {
     dt: number;
     main: OpenWeatherListMain;
-    weather: OpenWeatherListWeather;
+    weather: OpenWeatherListWeather[];
     clouds: OpenWeatherListClouds;
     wind: OpenWeatherListWind;
     sys: OpenWeatherListSys;
@@ -58,6 +58,23 @@ export interface OpenWeatherApiData {
     cod: string;
     message: number;
     cnt: number;
-    list: OpenWeatherList;
+    list: OpenWeatherList[];
     city: OpenWeatherCity;
+}
+
+export interface ForecastByTime {
+    weatherCondition: string;
+    weatherConditionDescription: string;
+    temperature: number;
+    temperatureUnit: string;
+    temperatureFeelsLike: number;
+    temperatureMax: number;
+    temperatureMin: number;
+    cityName: string;
+    dateText: string;
+}
+
+export interface ForecastForCity {
+    cityName: string;
+    weatherByTime: Array<Array<Array<Array<ForecastByTime>>>>;
 }

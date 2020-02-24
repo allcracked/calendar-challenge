@@ -1,14 +1,11 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../store';
 import history from '../../modules/History/BrowserHistory';
 
 import { WeekCalendar, DayCalendar } from './CalendarInterface';
-
-import DayView from '../../containers/DayView/DayView';
 
 interface Props {
     month?: number;

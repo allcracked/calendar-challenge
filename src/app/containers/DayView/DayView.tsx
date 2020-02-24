@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { AppState } from '../../store/index';
 
-import { OpenWeatherApiData } from '../../modules/OpenWeather/OpenWeatherInterfaces';
+import { ForecastForCity, ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
 import openWeatherApi from '../../modules/OpenWeather/OpenWeatherAPI';
 
 interface Props {
@@ -17,10 +17,11 @@ const DayView: React.FC<Props> = (props: Props) => {
     const [dateToUse, setDateToUse] = useState<FormattedTime>();
 
     const getWeatherData = async (): Promise<void> => {
-        let weatherData: OpenWeatherApiData;
+        let weatherData: ForecastByTime;
         if (remaindersData.mappedRemainders[dateToUse.dayMonthNumber].length > 0) {
-            weatherData = await openWeatherApi.getForecastForCity(
+            weatherData = await openWeatherApi.getForecastForCityByTimestamp(
                 remaindersData.remainders[remaindersData.mappedRemainders[dateToUse.dayMonthNumber][0]].location.city,
+                remaindersData.remainders[remaindersData.mappedRemainders[dateToUse.dayMonthNumber][0]].startTime,
             );
         }
         console.log({ weatherData });
