@@ -21,15 +21,12 @@ const RemainderView: React.FC<Props> = (props: Props) => {
     const [isLoading, setIsLoading] = useState(true);
 
     const getWeatherData = async () => {
-        const weatherFromAPI = await openWeatherApi.getForecastForCityByTimestamp(
-            remainder.location.city,
-            remainder.startTime,
-        );
+        const weatherFromAPI = await openWeatherApi.getForecastForCityByTimestamp(remainder.city, remainder.startTime);
         setWeatherDetails(weatherFromAPI);
     };
 
     const editRemainder = (remainderId: string) => {
-        history.push(`/createRemainder/${remainderId}`);
+        history.push(`/edit/${remainderId}`);
     };
 
     useEffect(() => {
@@ -55,7 +52,7 @@ const RemainderView: React.FC<Props> = (props: Props) => {
                     <h2>
                         {weatherMessage}
                         &nbsp;in&nbsp;
-                        {remainder.location.city}
+                        {remainder.city}
                     </h2>
                     Remainder for&nbsp;
                     {moment.unix(remainder.startTime).format('HH:mm')}

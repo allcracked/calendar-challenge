@@ -40,11 +40,12 @@ const renderApp = (): void => {
                         component={(props: any): ReactElement => <DayView day={props.match.params.date} />}
                     />
                     <Route
-                        path="/createRemainder/:remainderId"
+                        path="/edit/:remainderId"
                         component={(props: any): ReactElement => (
                             <CreateRemainder remainderId={props.match.params.remainderId} />
                         )}
                     />
+                    <Route path="/createRemainder" component={CreateRemainder} />
                     <Route component={Home} />
                 </Switch>
             </ConnectedRouter>

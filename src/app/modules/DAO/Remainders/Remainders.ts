@@ -116,6 +116,31 @@ class RemaindersDAO {
 
         return remaindersData;
     }
+
+    async setRemainderByUser(userID: string, remainder: RemainderInterface): Promise<boolean> {
+        const savingRemainder: RemainderInterface = remainder;
+        try {
+            const newRemainderKey = await firebaseDb.ref(`/remaindersByUID/${userID}/`).push().key;
+            savingRemainder.remainderId = newRemainderKey;
+            await firebaseDb.ref(`/remaindersByUID/${userID}/${newRemainderKey}`).set(savingRemainder);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async setRemainderByUserAndRemainderId(
+        userID: string,
+        remainderID: string,
+        remainder: RemainderInterface,
+    ): Promise<boolean> {
+        try {
+            await firebaseDb.ref(`/remaindersByUID/${userID}/${remainder.remainderId}`).update(remainder);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
 }
 
 const remaindersDAOInstance = new RemaindersDAO();

@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import moment, { calendarFormat } from 'moment';
+import moment from 'moment';
 
 import { RemaindersState, RemainderObject, RemainderMap, DayCalendar, WeekCalendar } from './RemaindersInterfaces';
 import { saveRemaindersData } from './RemaindersActions';
@@ -7,6 +7,7 @@ import RemaindersDAO from '../../modules/DAO/Remainders/Remainders';
 
 function mapRemaindersByDay(rawRemainders: RemainderObject): RemainderMap {
     const mappedRemainders: RemainderMap = [];
+    if (!rawRemainders) return mappedRemainders;
     const remaindersArray = Object.entries(rawRemainders);
 
     remaindersArray.forEach(remainder => {
@@ -172,7 +173,6 @@ function buildCalendar(month: number, year: number): WeekCalendar[] {
         forwardCounter += 1;
     }
 
-    console.log({ thisMonthCalendar });
     return thisMonthCalendar;
 }
 

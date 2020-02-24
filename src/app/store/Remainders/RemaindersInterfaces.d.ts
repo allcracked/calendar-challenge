@@ -8,9 +8,7 @@ export interface RemainderInterface {
     color: string;
     content: string;
     startTime: number;
-    endTime: number;
-    durationMinutes: number;
-    location: RemainderLocation;
+    city: string;
     remainderId: string;
 }
 
