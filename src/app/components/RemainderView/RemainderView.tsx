@@ -35,7 +35,6 @@ const RemainderView: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         if (weatherDetails) {
-            console.log({ weatherDetails });
             setWeatherMessage(`${weatherDetails.weatherCondition}`);
         }
         setIsLoading(false);

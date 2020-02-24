@@ -55,6 +55,7 @@ const renderApp = (): void => {
 };
 
 firebaseAuth.onAuthStateChanged((firebaseUser: firebase.User) => {
+    console.log({ firebaseUser });
     if (firebaseUser) {
         const loggedUserData: LoggedUser = {
             name: firebaseUser.displayName,

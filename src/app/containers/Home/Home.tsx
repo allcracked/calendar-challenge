@@ -11,7 +11,6 @@ import Calendar from '../../components/Calendar/Calendar';
 
 const Home: React.FC = () => {
     const userData = useSelector((state: AppState) => state.loggedUser.userData);
-    const remaindersData = useSelector((state: AppState) => state.remainders);
     const dispatch = useDispatch();
 
     useEffect(() => {

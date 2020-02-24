@@ -40,7 +40,7 @@ class OpenWeatherApi {
                 temperatureMin: Math.round(weatherInfo.main.temp_min),
                 temperatureUnit: this.tempUnits,
                 cityName: forecastData.city.name,
-                dateText: `${month}/${day}/${year} ${hour}:00`,
+                dateText: `${month + 1}/${day}/${year} ${hour}:00`,
             };
         });
         return returningForecastForCity;
@@ -68,30 +68,17 @@ class OpenWeatherApi {
      * @returns Single weather object containing the most aproximated weather information, null if not found.
      */
     async getForecastForCityByTimestamp(cityName: string, timestamp: number): Promise<ForecastByTime> {
-        const dayWithin5Days = moment()
+        const timestampWithin5Days = moment()
             .date(moment().date() + 5)
-            .date();
-        const monthWithin5Days = moment()
-            .date(moment().date() + 5)
-            .month();
-        const yearWithin5Days = moment()
-            .date(moment().date() + 5)
-            .year();
-        const hourWithin5Days = moment()
-            .date(moment().date() + 5)
-            .hour();
+            .unix();
+        const timestampForNow = Math.round(moment.now() / 1000);
 
         let dayLookingFor = moment.unix(timestamp).date();
         let monthLookingFor = moment.unix(timestamp).month();
         let yearLookingFor = moment.unix(timestamp).year();
         let hourLookingFor = moment.unix(timestamp).hour();
 
-        if (
-            yearLookingFor <= yearWithin5Days &&
-            monthLookingFor <= monthWithin5Days &&
-            dayLookingFor <= dayWithin5Days &&
-            hourLookingFor <= hourWithin5Days
-        ) {
+        if (timestampForNow < timestamp && timestampWithin5Days > timestamp) {
             const fiveDaysForecast: ForecastForCity = await this.getForecastForCity(cityName);
 
             if (
@@ -129,7 +116,6 @@ class OpenWeatherApi {
                 fiveDaysForecast.weatherByTime[yearLookingFor][monthLookingFor][dayLookingFor][lookForTime] || null;
             return foundWeather;
         }
-
         return null;
     }
 }
