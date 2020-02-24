@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
 
+import { AppState } from '../../store/index';
+import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
 import openWeatherApi from '../../modules/OpenWeather/OpenWeatherAPI';
+import remaindersDAO from '../../modules/DAO/Remainders/Remainders';
 import { ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
 import history from '../../modules/History/BrowserHistory';
+
 import Loader from '../Loader/Loader';
 
 interface Props {
@@ -15,18 +19,24 @@ interface Props {
 }
 
 const RemainderView: React.FC<Props> = (props: Props) => {
+    const userData = useSelector((state: AppState) => state.loggedUser.userData);
     const { remainder, closeModalParentFunction } = props;
     const [weatherDetails, setWeatherDetails] = useState<ForecastByTime>();
     const [weatherMessage, setWeatherMessage] = useState('No weather available.');
     const [isLoading, setIsLoading] = useState(true);
 
-    const getWeatherData = async () => {
+    const getWeatherData = async (): Promise<void> => {
         const weatherFromAPI = await openWeatherApi.getForecastForCityByTimestamp(remainder.city, remainder.startTime);
         setWeatherDetails(weatherFromAPI);
     };
 
-    const editRemainder = (remainderId: string) => {
+    const editRemainder = (remainderId: string): void => {
         history.push(`/edit/${remainderId}`);
+    };
+
+    const deleteRemainder = async (remainderId: string): Promise<void> => {
+        await remaindersDAO.removeRemainderByUserAndRemainderId(userData.uid, remainderId);
+        closeModalParentFunction();
     };
 
     useEffect(() => {
@@ -62,7 +72,10 @@ const RemainderView: React.FC<Props> = (props: Props) => {
                 <Button variant="secondary" onClick={closeModalParentFunction}>
                     Close
                 </Button>
-                <Button variant="warning" onClick={() => editRemainder(remainder.remainderId)}>
+                <Button variant="danger" onClick={(): Promise<void> => deleteRemainder(remainder.remainderId)}>
+                    Delete
+                </Button>
+                <Button variant="warning" onClick={(): void => editRemainder(remainder.remainderId)}>
                     Edit
                 </Button>
             </Modal.Footer>

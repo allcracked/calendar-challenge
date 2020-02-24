@@ -141,6 +141,36 @@ class RemaindersDAO {
             return false;
         }
     }
+
+    async removeRemainderByUserAndRemainderId(userID: string, remainderID: string): Promise<boolean> {
+        try {
+            await firebaseDb
+                .ref(`/remaindersByUID/${userID}/`)
+                .child(remainderID)
+                .remove();
+
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async removeRemainderByUserAndDay(userID: string, timestamp: number): Promise<boolean> {
+        const remainders: RemainderInterface[] = await this.getRemaindersByUserAndDay(userID, timestamp);
+        const removeRemaindersPromise: any = [];
+        remainders.forEach(remainder => {
+            removeRemaindersPromise.push(
+                firebaseDb
+                    .ref(`/remaindersByUID/${userID}/`)
+                    .child(remainder.remainderId)
+                    .remove(),
+            );
+        });
+
+        return Promise.all(removeRemaindersPromise).then(() => {
+            return true;
+        });
+    }
 }
 
 const remaindersDAOInstance = new RemaindersDAO();

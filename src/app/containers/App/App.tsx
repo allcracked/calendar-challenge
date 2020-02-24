@@ -55,15 +55,25 @@ const renderApp = (): void => {
 };
 
 firebaseAuth.onAuthStateChanged((firebaseUser: firebase.User) => {
-    console.log({ firebaseUser });
     if (firebaseUser) {
-        const loggedUserData: LoggedUser = {
-            name: firebaseUser.displayName,
-            uid: firebaseUser.uid,
-            profilePicture: firebaseUser.photoURL,
-            email: firebaseUser.email,
-            isAnonymous: firebaseUser.isAnonymous,
-        };
+        let loggedUserData: LoggedUser;
+        if (firebaseUser.isAnonymous) {
+            loggedUserData = {
+                name: 'Anon User',
+                uid: firebaseUser.uid,
+                profilePicture: 'https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png',
+                email: 'email@anon.com',
+                isAnonymous: firebaseUser.isAnonymous,
+            };
+        } else {
+            loggedUserData = {
+                name: firebaseUser.displayName,
+                uid: firebaseUser.uid,
+                profilePicture: 'firebaseUser.photoURL',
+                email: firebaseUser.email,
+                isAnonymous: firebaseUser.isAnonymous,
+            };
+        }
 
         store.dispatch(saveLoggedUserData(loggedUserData));
         renderApp();

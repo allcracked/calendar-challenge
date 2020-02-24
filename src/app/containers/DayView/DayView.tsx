@@ -9,9 +9,11 @@ import { AppState } from '../../store/index';
 
 import { ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
 import openWeatherApi from '../../modules/OpenWeather/OpenWeatherAPI';
+import remaindersDAO from '../../modules/DAO/Remainders/Remainders';
+import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
+import history from '../../modules/History/BrowserHistory';
 
 import Loader from '../../components/Loader/Loader';
-import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
 import RemainderView from '../../components/RemainderView/RemainderView';
 import Home from '../Home/Home';
 
@@ -22,6 +24,7 @@ interface Props {
 const DayView: React.FC<Props> = (props: Props) => {
     const { day } = props;
     const remaindersData = useSelector((state: AppState) => state.remainders);
+    const userData = useSelector((state: AppState) => state.loggedUser.userData);
     const [dateToUse, setDateToUse] = useState<FormattedTime>();
     const [todaysWeather, setTodaysWeather] = useState('No weather data available.');
     const [thisDayRemainders, setThisDayRemainders] = useState<RemainderInterface[]>();
@@ -63,13 +66,18 @@ const DayView: React.FC<Props> = (props: Props) => {
         setThisDayRemainders(returningRemainders);
     };
 
-    const openRemainderModal = (selectedRemainder: RemainderInterface) => {
+    const openRemainderModal = (selectedRemainder: RemainderInterface): void => {
         setActiveRemainder(selectedRemainder);
         setShowRemainderModal(true);
     };
-    const closeRemainderModal = () => {
+    const closeRemainderModal = (): void => {
         console.log('called close function@');
         setShowRemainderModal(false);
+    };
+
+    const clearDay = async (): Promise<void> => {
+        await remaindersDAO.removeRemainderByUserAndDay(userData.uid, dateToUse.timestamp);
+        history.push('/home');
     };
 
     useEffect(() => {
@@ -101,7 +109,7 @@ const DayView: React.FC<Props> = (props: Props) => {
                                 {moment.unix(remainder.startTime).format('HH:mm')}
                                 &nbsp;Remainder:&nbsp;
                                 {remainder.content}
-                                <button type="button" onClick={() => openRemainderModal(remainder)}>
+                                <button type="button" onClick={(): void => openRemainderModal(remainder)}>
                                     See
                                 </button>
                             </li>
@@ -111,6 +119,7 @@ const DayView: React.FC<Props> = (props: Props) => {
                     <li>No reaminders for this day.</li>
                 )}
             </ul>
+            <Button onClick={clearDay}>Clear Day</Button>
 
             <Modal show={showRemainderModal} onHide={closeRemainderModal}>
                 <RemainderView remainder={activeRemainder} closeModalParentFunction={closeRemainderModal} />
