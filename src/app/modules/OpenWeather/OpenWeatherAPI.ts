@@ -2,7 +2,7 @@ import moment from 'moment';
 import { OpenWeatherApiData, OpenWeatherList, ForecastByTime, ForecastForCity } from './OpenWeatherInterfaces';
 
 class OpenWeatherApi {
-    private baseUrl = 'http://api.openweathermap.org/data/2.5/forecast';
+    private baseUrl = 'https://api.openweathermap.org/data/2.5/forecast';
 
     private apiKey = process.env.OPEN_WEATHER_MAP_API;
 

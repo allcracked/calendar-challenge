@@ -9,6 +9,7 @@ import { firebaseAuth } from '../../modules/Firebase/FirebaseApp';
 import store from '../../store';
 import { LoggedUser } from '../../store/LoggedUser/LoggedUserInterface';
 import { saveLoggedUserData, cleanLoggedUserData } from '../../store/LoggedUser/LoggedUserActions';
+import { cleanRemaindersData } from '../../store/Remainders/RemaindersActions';
 import history from '../../modules/History/BrowserHistory';
 
 import Login from '../Login/Login';
@@ -79,6 +80,7 @@ firebaseAuth.onAuthStateChanged((firebaseUser: firebase.User) => {
         renderApp();
         history.push('/home');
     } else {
+        store.dispatch(cleanRemaindersData());
         store.dispatch(cleanLoggedUserData());
         renderApp();
         history.push('/login');
