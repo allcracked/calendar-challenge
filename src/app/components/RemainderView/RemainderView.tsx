@@ -1,0 +1,77 @@
+import React, { useEffect, useState } from 'react';
+import moment from 'moment';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
+
+import openWeatherApi from '../../modules/OpenWeather/OpenWeatherAPI';
+import { ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
+import history from '../../modules/History/BrowserHistory';
+import Loader from '../Loader/Loader';
+
+interface Props {
+    remainder: RemainderInterface;
+    closeModalParentFunction: () => void;
+}
+
+const RemainderView: React.FC<Props> = (props: Props) => {
+    const { remainder, closeModalParentFunction } = props;
+    const [weatherDetails, setWeatherDetails] = useState<ForecastByTime>();
+    const [weatherMessage, setWeatherMessage] = useState('No weather available.');
+    const [isLoading, setIsLoading] = useState(true);
+
+    const getWeatherData = async () => {
+        const weatherFromAPI = await openWeatherApi.getForecastForCityByTimestamp(
+            remainder.location.city,
+            remainder.startTime,
+        );
+        setWeatherDetails(weatherFromAPI);
+    };
+
+    const editRemainder = (remainderId: string) => {
+        history.push(`/createRemainder/${remainderId}`);
+    };
+
+    useEffect(() => {
+        getWeatherData();
+    }, []);
+
+    useEffect(() => {
+        if (weatherDetails) {
+            console.log({ weatherDetails });
+            setWeatherMessage(`${weatherDetails.weatherCondition}`);
+        }
+        setIsLoading(false);
+    }, [weatherDetails]);
+
+    if (isLoading) {
+        return <Loader />;
+    }
+
+    return (
+        <div>
+            <Modal.Header closeButton>
+                <Modal.Title>
+                    <h2>
+                        {weatherMessage}
+                        &nbsp;in&nbsp;
+                        {remainder.location.city}
+                    </h2>
+                    Remainder for&nbsp;
+                    {moment.unix(remainder.startTime).format('HH:mm')}
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{remainder.content}</Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={closeModalParentFunction}>
+                    Close
+                </Button>
+                <Button variant="warning" onClick={() => editRemainder(remainder.remainderId)}>
+                    Edit
+                </Button>
+            </Modal.Footer>
+        </div>
+    );
+};
+
+export default RemainderView;

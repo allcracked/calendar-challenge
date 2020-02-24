@@ -2,32 +2,39 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+
 import { AppState } from '../../store/index';
 
-import { ForecastForCity, ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
+import { ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
 import openWeatherApi from '../../modules/OpenWeather/OpenWeatherAPI';
 
+import Loader from '../../components/Loader/Loader';
+import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
+import RemainderView from '../../components/RemainderView/RemainderView';
+import Home from '../Home/Home';
+
 interface Props {
-    day: string;
+    day?: string;
 }
 
 const DayView: React.FC<Props> = (props: Props) => {
     const { day } = props;
     const remaindersData = useSelector((state: AppState) => state.remainders);
     const [dateToUse, setDateToUse] = useState<FormattedTime>();
+    const [todaysWeather, setTodaysWeather] = useState('No weather data available.');
+    const [thisDayRemainders, setThisDayRemainders] = useState<RemainderInterface[]>();
+    const [isLoading, setIsLoading] = useState(true);
+    const [showRemainderModal, setShowRemainderModal] = useState(false);
+    const [activeRemainder, setActiveRemainder] = useState<RemainderInterface>();
 
-    const getWeatherData = async (): Promise<void> => {
-        let weatherData: ForecastByTime;
-        if (remaindersData.mappedRemainders[dateToUse.dayMonthNumber].length > 0) {
-            weatherData = await openWeatherApi.getForecastForCityByTimestamp(
-                remaindersData.remainders[remaindersData.mappedRemainders[dateToUse.dayMonthNumber][0]].location.city,
-                remaindersData.remainders[remaindersData.mappedRemainders[dateToUse.dayMonthNumber][0]].startTime,
-            );
-        }
-        console.log({ weatherData });
+    const getTodaysWeatherFromAPI = async (): Promise<void> => {
+        // const weatherData: ForecastByTime = await openWeatherApi.getForecastForCityByTimestamp(moment.now() / 1000);
     };
 
     const getTimeData = (date: string): FormattedTime => {
+        // @TODO Menthod to get weather for current user's city.
         const slashFormatTime = date.replace(/-/g, '/');
         const returningTime: FormattedTime = {
             year: moment(slashFormatTime, moment.localeData().longDateFormat('L')).year(),
@@ -35,23 +42,79 @@ const DayView: React.FC<Props> = (props: Props) => {
             dayMonthNumber: moment(slashFormatTime, moment.localeData().longDateFormat('L')).date(),
             dayWeekNumber: Number(moment(slashFormatTime, moment.localeData().longDateFormat('L')).format('d')),
             fullDate: slashFormatTime,
+            timestamp: moment(slashFormatTime, moment.localeData().longDateFormat('L')).unix(),
         };
         return returningTime;
     };
 
+    const getThisDateRemainders = () => {
+        const returningRemainders: RemainderInterface[] = [];
+        if (
+            remaindersData.mappedRemainders[dateToUse.year] &&
+            remaindersData.mappedRemainders[dateToUse.year][dateToUse.monthNumber] &&
+            remaindersData.mappedRemainders[dateToUse.year][dateToUse.monthNumber][dateToUse.dayMonthNumber]
+        ) {
+            remaindersData.mappedRemainders[dateToUse.year][dateToUse.monthNumber][dateToUse.dayMonthNumber].forEach(
+                (remainderId: string) => {
+                    returningRemainders.push(remaindersData.remainders[remainderId]);
+                },
+            );
+        }
+        setThisDayRemainders(returningRemainders);
+    };
+
+    const openRemainderModal = (selectedRemainder: RemainderInterface) => {
+        setActiveRemainder(selectedRemainder);
+        setShowRemainderModal(true);
+    };
+    const closeRemainderModal = () => {
+        console.log('called close function@');
+        setShowRemainderModal(false);
+    };
+
     useEffect(() => {
-        const formattedDay = getTimeData(day);
-        setDateToUse(formattedDay);
+        setDateToUse(getTimeData(day));
     }, []);
 
     useEffect(() => {
-        if (!dateToUse) return;
-        getWeatherData();
+        if (dateToUse) getThisDateRemainders();
     }, [dateToUse]);
+
+    useEffect(() => {
+        if (thisDayRemainders) {
+            setIsLoading(false);
+        }
+    }, [thisDayRemainders]);
+
+    if (!day) return <Home />;
+    if (isLoading) return <Loader />;
 
     return (
         <div>
-            <p>Hey</p>
+            <h1>{moment(dateToUse.fullDate, moment.localeData().longDateFormat('L')).format('dddd, MMMM Do, YYYY')}</h1>
+            <ul>
+                {thisDayRemainders.length > 0 ? (
+                    thisDayRemainders.map(remainder => {
+                        return (
+                            <li key={remainder.startTime}>
+                                Time:&nbsp;
+                                {moment.unix(remainder.startTime).format('HH:mm')}
+                                &nbsp;Remainder:&nbsp;
+                                {remainder.content}
+                                <button type="button" onClick={() => openRemainderModal(remainder)}>
+                                    See
+                                </button>
+                            </li>
+                        );
+                    })
+                ) : (
+                    <li>No reaminders for this day.</li>
+                )}
+            </ul>
+
+            <Modal show={showRemainderModal} onHide={closeRemainderModal}>
+                <RemainderView remainder={activeRemainder} closeModalParentFunction={closeRemainderModal} />
+            </Modal>
         </div>
     );
 };
@@ -64,4 +127,5 @@ interface FormattedTime {
     dayMonthNumber: number;
     dayWeekNumber: number;
     fullDate: string;
+    timestamp: number;
 }

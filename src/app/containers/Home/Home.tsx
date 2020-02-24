@@ -14,7 +14,7 @@ const Home: React.FC = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(thunkGetRemaindersData(userData.uid, moment().month()));
+        dispatch(thunkGetRemaindersData(userData.uid, moment().month(), moment().year()));
     }, []);
 
     const logout = (): void => {

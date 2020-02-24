@@ -13,6 +13,7 @@ const remaindersReducer = handleActions<RemaindersState, ActionsPayloadType>(
                 ...state,
                 remainders: remaindersData.remainders,
                 mappedRemainders: remaindersData.mappedRemainders,
+                currentCalendar: remaindersData.currentCalendar,
                 usingMonth: remaindersData.usingMonth,
             };
         },
@@ -21,6 +22,7 @@ const remaindersReducer = handleActions<RemaindersState, ActionsPayloadType>(
                 ...state,
                 remainders: remaindersInitialState.remainders,
                 mappedRemainders: remaindersInitialState.mappedRemainders,
+                currentCalendar: remaindersInitialState.currentCalendar,
                 usingMonth: remaindersInitialState.usingMonth,
             };
         },

@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import moment from 'moment';
 
 import { firebaseDb } from '../../Firebase/FirebaseApp';
-import { RemainderObject } from '../../../store/Remainders/RemaindersInterfaces';
+import { RemainderObject, RemainderInterface } from '../../../store/Remainders/RemaindersInterfaces';
 
 class RemaindersDAO {
     /**
@@ -44,6 +44,75 @@ class RemaindersDAO {
             .once('value');
 
         const remaindersData: RemainderObject = remaidersSnapshot.val();
+
+        return remaindersData;
+    }
+
+    async getRemainderByUserAndId(userID: string, remainderId: string): Promise<RemainderInterface> {
+        const remainderSnap: firebase.database.DataSnapshot = await firebaseDb
+            .ref(`/remaindersByUID/${userID}/${remainderId}`)
+            .once('value');
+
+        if (!remainderSnap.exists()) return null;
+
+        const remainder: RemainderInterface = remainderSnap.val();
+
+        return remainder;
+    }
+
+    async getRemaindersByUserAndDay(userID: string, timestamp: number): Promise<RemainderInterface[]> {
+        const startOfDay = moment
+            .unix(timestamp)
+            .startOf('day')
+            .unix();
+        const endOfDay = moment
+            .unix(timestamp)
+            .endOf('day')
+            .unix();
+
+        const remaindersSnap: firebase.database.DataSnapshot = await firebaseDb
+            .ref(`/remaindersByUID/${userID}`)
+            .orderByChild('startTime')
+            .startAt(startOfDay)
+            .endAt(endOfDay)
+            .once('value');
+
+        if (!remaindersSnap.exists()) return [];
+
+        const remaindersData: RemainderObject = remaindersSnap.val();
+        const returnRemainders: RemainderInterface[] = [];
+
+        Object.values(remaindersData).forEach(remainder => {
+            returnRemainders.push(remainder);
+        });
+
+        return returnRemainders;
+    }
+
+    async getRemaindersByUserAndTimeRange(
+        userID: string,
+        startTimestamp: number,
+        endTimestamp: number,
+    ): Promise<RemainderObject> {
+        const startOfDay = moment
+            .unix(startTimestamp)
+            .startOf('day')
+            .unix();
+        const endOfDay = moment
+            .unix(endTimestamp)
+            .endOf('day')
+            .unix();
+
+        const remaindersSnap: firebase.database.DataSnapshot = await firebaseDb
+            .ref(`/remaindersByUID/${userID}`)
+            .orderByChild('startTime')
+            .startAt(startOfDay)
+            .endAt(endOfDay)
+            .once('value');
+
+        if (!remaindersSnap.exists()) return null;
+
+        const remaindersData: RemainderObject = remaindersSnap.val();
 
         return remaindersData;
     }
