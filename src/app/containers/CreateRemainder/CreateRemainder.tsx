@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import moment from 'moment';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import moment from 'moment';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Toast from 'react-bootstrap/Toast';
 
 import { AppState } from '../../store';
 import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
@@ -11,6 +15,7 @@ import history from '../../modules/History/BrowserHistory';
 
 import Loader from '../../components/Loader/Loader';
 import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 interface Props {
     remainderId?: string;
@@ -29,6 +34,8 @@ const CreateRemainder: React.FC<Props> = (props: Props) => {
     const [idRemainder, setIdRemainder] = useState('');
     const [dateRemainder, setDateRemainder] = useState(moment.unix(moment.now() / 1000).format('YYYY-MM-DD'));
     const [timeRemainder, setTimeRemainder] = useState(moment.unix(moment.now() / 1000).format('HH:mm'));
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         if (remainderId) {
@@ -80,6 +87,8 @@ const CreateRemainder: React.FC<Props> = (props: Props) => {
         try {
             checkEditedRemainderStructure();
         } catch (error) {
+            setErrorMessage(error.message);
+            setShowErrorAlert(true);
             return;
         }
 
@@ -125,67 +134,89 @@ const CreateRemainder: React.FC<Props> = (props: Props) => {
     return (
         <div>
             <Header />
-            <h1>{remainderEdit ? 'Editing Remainder' : 'Creating New Remainder'}</h1>
-            <Form onSubmit={handleRemainderChanges}>
-                <Form.Group controlId="formContent">
-                    <Form.Label>Content</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Remainder content"
-                        maxLength={30}
-                        required
-                        value={contentRemainder}
-                        onChange={handleContentChange}
-                    />
-                    <Form.Text className="text-muted">Remainder can have up to 30 characters.</Form.Text>
-                    <Form.Group controlId="fromColor">
-                        <Form.Label>Select a Color</Form.Label>
-                        <Form.Control as="select" value={colorRemainder} onChange={handleColorChange}>
-                            <option value="FF6666">Red</option>
-                            <option value="43A3EC">Blue</option>
-                            <option value="95E1AD">Green</option>
-                            <option value="FFFF99">Yellow</option>
-                        </Form.Control>
-                    </Form.Group>
-                </Form.Group>
+            <Container>
+                <h1>{remainderEdit ? 'Edit Remainder' : 'Create a New Remainder'}</h1>
+                <br />
+                <Row>
+                    <Col md={{ span: 6, offset: 3 }}>
+                        <Form onSubmit={handleRemainderChanges}>
+                            <Form.Group controlId="formContent">
+                                <Form.Label>Remainder</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Remainder content"
+                                    maxLength={30}
+                                    required
+                                    value={contentRemainder}
+                                    onChange={handleContentChange}
+                                />
+                                <Form.Text className="text-muted">Remainder can have up to 30 characters.</Form.Text>
+                                <Form.Group controlId="fromColor">
+                                    <Form.Label>Select a Color</Form.Label>
+                                    <Form.Control as="select" value={colorRemainder} onChange={handleColorChange}>
+                                        <option value="FF6666">Red</option>
+                                        <option value="43A3EC">Blue</option>
+                                        <option value="95E1AD">Green</option>
+                                        <option value="FFFF99">Yellow</option>
+                                    </Form.Control>
+                                </Form.Group>
+                            </Form.Group>
 
-                <Form.Group controlId="startDate">
-                    <Form.Label>Start Date</Form.Label>
-                    <Form.Control
-                        type="date"
-                        placeholder="Date"
-                        required
-                        value={dateRemainder}
-                        onChange={handleDateChange}
-                    />
-                </Form.Group>
-                <Form.Group controlId="startTime">
-                    <Form.Label>Time</Form.Label>
-                    <Form.Control
-                        type="time"
-                        placeholder="Time"
-                        required
-                        value={timeRemainder}
-                        onChange={handleTimeChange}
-                    />
-                </Form.Group>
+                            <Form.Group controlId="startDate">
+                                <Form.Label>Remainder Date</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    placeholder="Date"
+                                    required
+                                    value={dateRemainder}
+                                    onChange={handleDateChange}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="startTime">
+                                <Form.Label>Remainder Time</Form.Label>
+                                <Form.Control
+                                    type="time"
+                                    placeholder="Time"
+                                    required
+                                    value={timeRemainder}
+                                    onChange={handleTimeChange}
+                                />
+                            </Form.Group>
 
-                <Form.Group controlId="city">
-                    <Form.Label>City</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Add a City"
-                        minLength={2}
-                        required
-                        value={cityRemainder}
-                        onChange={handleCityChange}
-                    />
-                </Form.Group>
+                            <Form.Group controlId="city">
+                                <Form.Label>City</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Add a City"
+                                    minLength={2}
+                                    required
+                                    value={cityRemainder}
+                                    onChange={handleCityChange}
+                                />
+                            </Form.Group>
 
-                <Button variant="primary" type="submit">
-                    {remainderEdit ? 'Save' : 'Create'}
-                </Button>
-            </Form>
+                            <Button variant="primary" type="submit">
+                                {remainderEdit ? 'Save Changes' : 'Create Remainder'}
+                            </Button>
+                        </Form>
+                    </Col>
+                </Row>
+                <Toast
+                    show={showErrorAlert}
+                    onClose={() => setShowErrorAlert(false)}
+                    style={{
+                        position: 'absolute',
+                        bottom: 20,
+                        right: 20,
+                    }}
+                >
+                    <Toast.Header>
+                        <strong className="mr-auto">Error</strong>
+                    </Toast.Header>
+                    <Toast.Body>{errorMessage}</Toast.Body>
+                </Toast>
+            </Container>
+            <Footer />
         </div>
     );
 };
