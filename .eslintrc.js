@@ -24,6 +24,7 @@ module.exports = {
         'react/jsx-indent-props': ['off'],
         'import/extensions': ['off'],
         'class-methods-use-this': ['off'],
+        "prefer-destructuring": ["error", {"object": true, "array": false}]
     },
     env: {
         browser: true,

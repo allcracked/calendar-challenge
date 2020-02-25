@@ -50,7 +50,7 @@ const DayView: React.FC<Props> = (props: Props) => {
         return returningTime;
     };
 
-    const getThisDateRemainders = () => {
+    const getThisDateRemainders = (): void => {
         const returningRemainders: RemainderInterface[] = [];
         if (
             remaindersData.mappedRemainders[dateToUse.year] &&
@@ -63,6 +63,7 @@ const DayView: React.FC<Props> = (props: Props) => {
                 },
             );
         }
+        returningRemainders.sort((a, b) => a.startTime - b.startTime);
         setThisDayRemainders(returningRemainders);
     };
 

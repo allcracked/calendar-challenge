@@ -176,7 +176,11 @@ function buildCalendar(month: number, year: number): WeekCalendar[] {
     return thisMonthCalendar;
 }
 
-function fillCalendar(remaindersMap: RemainderMap, calendarView: WeekCalendar[]): WeekCalendar[] {
+function fillCalendar(
+    remaindersMap: RemainderMap,
+    calendarView: WeekCalendar[],
+    remainders: RemainderObject,
+): WeekCalendar[] {
     const flattenedCalendar: DayCalendar[] = [];
 
     calendarView.forEach(week => {
@@ -190,6 +194,7 @@ function fillCalendar(remaindersMap: RemainderMap, calendarView: WeekCalendar[])
                     returningDay.remainders.push(remainder);
                 });
             }
+            returningDay.remainders.sort((a, b) => remainders[a].startTime - remainders[b].startTime);
             flattenedCalendar.push(returningDay);
         });
     });
@@ -220,7 +225,7 @@ const thunkGetRemaindersData = (userId: string, month: number, year: number) => 
     );
     const mappedRemainders: RemainderMap = mapRemaindersByDay(remaindersData);
 
-    const completeCalendar: WeekCalendar[] = fillCalendar(mappedRemainders, currentCalendar);
+    const completeCalendar: WeekCalendar[] = fillCalendar(mappedRemainders, currentCalendar, remaindersData);
 
     const remaindersSavingData: RemaindersState = {
         remainders: remaindersData,

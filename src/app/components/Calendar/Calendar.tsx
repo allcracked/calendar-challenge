@@ -7,8 +7,15 @@ import Table from 'react-bootstrap/Table';
 
 import { AppState } from '../../store';
 import history from '../../modules/History/BrowserHistory';
+import openWeatherAPI from '../../modules/OpenWeather/OpenWeatherAPI';
 
-import { WeekCalendar, DayCalendar } from '../../store/Remainders/RemaindersInterfaces';
+import {
+    WeekCalendar,
+    DayCalendar,
+    RemainderMap,
+    RemainderInterface,
+} from '../../store/Remainders/RemaindersInterfaces';
+import { OpenWeatherApiData } from '../../modules/OpenWeather/OpenWeatherInterfaces';
 
 interface Props {
     month?: number;
@@ -23,12 +30,72 @@ const Calendar: React.FC<Props> = (props: Props) => {
 
     const [fullCalendar, setFullCalendar] = useState<Array<WeekCalendar>>([]);
 
-    const handleSelection = (selectedDay: DayCalendar) => {
+    const handleSelection = (selectedDay: DayCalendar): void => {
         history.push(`/day/${selectedDay.fullDate}`);
     };
 
+    const getWeatherForecast = async () => {
+        let todaysYearNumber = moment().year();
+        let todaysMonthNumber = moment().month();
+        let todaysDayNumber = moment().date();
+
+        const next5DaysMappedRemainders: RemainderMap = [];
+
+        let completed5Days = false;
+        let dayCounter = 0;
+        while (!completed5Days) {
+            console.log({ todaysDayNumber, todaysMonthNumber, todaysYearNumber });
+            if (
+                remaindersData.mappedRemainders[todaysYearNumber] &&
+                remaindersData.mappedRemainders[todaysYearNumber][todaysMonthNumber] &&
+                remaindersData.mappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber]
+            ) {
+                console.log('got into if');
+                next5DaysMappedRemainders[todaysYearNumber] = next5DaysMappedRemainders[todaysYearNumber] || [];
+                next5DaysMappedRemainders[todaysYearNumber][todaysMonthNumber] =
+                    next5DaysMappedRemainders[todaysYearNumber][todaysMonthNumber] || [];
+                next5DaysMappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber] = [];
+                next5DaysMappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber][0] =
+                    remaindersData.mappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber][0][0];
+                const remainder: RemainderInterface =
+                    remaindersData.remainders[
+                        remaindersData.mappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber][0][0]
+                    ];
+                // openWeatherAPI.getForecastForCityByTimestamp(remainder.city, remainder.startTime).then(data => {});
+            }
+
+            if (
+                todaysDayNumber ===
+                moment()
+                    .endOf('month')
+                    .date()
+            ) {
+                todaysDayNumber = 1;
+                if (
+                    todaysMonthNumber ===
+                    moment()
+                        .endOf('year')
+                        .month()
+                ) {
+                    todaysMonthNumber = 1;
+                    todaysYearNumber += 1;
+                }
+            } else {
+                todaysDayNumber += 1;
+            }
+
+            if (dayCounter === 5) completed5Days = true;
+            dayCounter += 1;
+        }
+
+        console.log({ next5DaysMappedRemainders });
+    };
+
     useEffect(() => {
-        if (remaindersData.currentCalendar.length > 0) setFullCalendar(remaindersData.currentCalendar);
+        if (remaindersData.currentCalendar.length > 0) {
+            setFullCalendar(remaindersData.currentCalendar);
+            // getWeatherForecast();
+        }
     }, [remaindersData]);
 
     return (
