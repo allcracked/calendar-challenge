@@ -14,6 +14,8 @@ import remaindersDAO from '../../modules/DAO/Remainders/Remainders';
 import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
 import history from '../../modules/History/BrowserHistory';
 import thunkGetRemaindersData from '../../store/Remainders/RemaindersThunks';
+import { APIIPInfoResponse } from '../../modules/IPInfo/IPInfoInterfaces';
+import IPInfoAPI from '../../modules/IPInfo/IPInfoAPI';
 
 import Loader from '../../components/Loader/Loader';
 import RemainderView from '../../components/RemainderView/RemainderView';
@@ -30,14 +32,19 @@ const DayView: React.FC<Props> = (props: Props) => {
     const userData = useSelector((state: AppState) => state.loggedUser.userData);
     const dispatch = useDispatch();
     const [dateToUse, setDateToUse] = useState<FormattedTime>();
-    const [todaysWeather, setTodaysWeather] = useState('No weather data available.');
+    const [todaysWeather, setTodaysWeather] = useState<ForecastByTime>();
     const [thisDayRemainders, setThisDayRemainders] = useState<RemainderInterface[]>();
     const [isLoading, setIsLoading] = useState(true);
     const [showRemainderModal, setShowRemainderModal] = useState(false);
     const [activeRemainder, setActiveRemainder] = useState<RemainderInterface>();
 
     const getTodaysWeatherFromAPI = async (): Promise<void> => {
-        // const weatherData: ForecastByTime = await openWeatherApi.getForecastForCityByTimestamp(moment.now() / 1000);
+        const localizationData: APIIPInfoResponse = await IPInfoAPI.getLocationData();
+        const weatherData: ForecastByTime = await openWeatherApi.getForecastForCityByTimestamp(
+            localizationData.city,
+            moment.now() / 1000 + 3000,
+        );
+        setTodaysWeather(weatherData);
     };
 
     const getTimeData = (date: string): FormattedTime => {
@@ -71,6 +78,21 @@ const DayView: React.FC<Props> = (props: Props) => {
         setThisDayRemainders(returningRemainders);
     };
 
+    useEffect(() => {
+        setDateToUse(getTimeData(day));
+    }, []);
+
+    useEffect(() => {
+        if (dateToUse) getThisDateRemainders();
+    }, [dateToUse, remaindersData]);
+
+    useEffect(() => {
+        if (thisDayRemainders) {
+            getTodaysWeatherFromAPI();
+            setIsLoading(false);
+        }
+    }, [thisDayRemainders]);
+
     const openRemainderModal = (selectedRemainder: RemainderInterface): void => {
         setActiveRemainder(selectedRemainder);
         setShowRemainderModal(true);
@@ -83,20 +105,6 @@ const DayView: React.FC<Props> = (props: Props) => {
         await remaindersDAO.removeRemainderByUserAndDay(userData.uid, dateToUse.timestamp);
         dispatch(thunkGetRemaindersData(userData.uid, remaindersData.usingMonth, remaindersData.usingYear));
     };
-
-    useEffect(() => {
-        setDateToUse(getTimeData(day));
-    }, []);
-
-    useEffect(() => {
-        if (dateToUse) getThisDateRemainders();
-    }, [dateToUse, remaindersData]);
-
-    useEffect(() => {
-        if (thisDayRemainders) {
-            setIsLoading(false);
-        }
-    }, [thisDayRemainders]);
 
     if (isLoading) return <Loader />;
 
