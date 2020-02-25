@@ -266,7 +266,7 @@ const Calendar: React.FC = () => {
                     );
                 })}
             </Container>
-            <Modal show={showRemainderModal} onHide={closeRemainderModal}>
+            <Modal centered show={showRemainderModal} onHide={closeRemainderModal}>
                 <RemainderView remainder={activeRemainder} closeModalParentFunction={closeRemainderModal} />
             </Modal>
             <br />

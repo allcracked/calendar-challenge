@@ -50,7 +50,11 @@ const RemainderView: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         if (weatherDetails) {
-            setWeatherMessage(`${weatherDetails.weatherCondition}`);
+            setWeatherMessage(
+                `${weatherDetails.temperature}\u2103 ${weatherDetails.weatherCondition} in ${weatherDetails.cityName}`,
+            );
+        } else {
+            setWeatherMessage(`No weather details available for ${remainder.city}`);
         }
         setIsLoading(false);
     }, [weatherDetails]);
@@ -63,25 +67,23 @@ const RemainderView: React.FC<Props> = (props: Props) => {
         <div>
             <Modal.Header closeButton>
                 <Modal.Title>
-                    <h2>
-                        {weatherMessage}
-                        &nbsp;in&nbsp;
-                        {remainder.city}
-                    </h2>
+                    <h4>{weatherMessage}</h4>
                     Remainder for&nbsp;
-                    {moment.unix(remainder.startTime).format('HH:mm')}
+                    {moment.unix(remainder.startTime).calendar()}
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body>{remainder.content}</Modal.Body>
+            <Modal.Body>
+                <h3>{remainder.content}</h3>
+            </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={closeModalParentFunction}>
-                    Close
-                </Button>
                 <Button variant="danger" onClick={(): Promise<void> => deleteRemainder(remainder.remainderId)}>
                     Delete
                 </Button>
                 <Button variant="warning" onClick={(): void => editRemainder(remainder.remainderId)}>
                     Edit
+                </Button>
+                <Button variant="secondary" onClick={closeModalParentFunction}>
+                    Close
                 </Button>
             </Modal.Footer>
         </div>
