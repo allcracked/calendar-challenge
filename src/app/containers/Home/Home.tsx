@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
+import Container from 'react-bootstrap/Container';
 
 import { firebaseAuth } from '../../modules/Firebase/FirebaseApp';
 import { AppState } from '../../store';
@@ -8,6 +9,8 @@ import thunkGetRemaindersData from '../../store/Remainders/RemaindersThunks';
 import history from '../../modules/History/BrowserHistory';
 
 import Calendar from '../../components/Calendar/Calendar';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 const Home: React.FC = () => {
     const userData = useSelector((state: AppState) => state.loggedUser.userData);
@@ -27,15 +30,11 @@ const Home: React.FC = () => {
 
     return (
         <div>
-            <h1>Home</h1>
-            <Calendar />
-
-            <button type="button" onClick={logout}>
-                Logout
-            </button>
-            <button type="button" onClick={handlerCreateNewRemainder}>
-                Create New Remainder
-            </button>
+            <Header />
+            <Container>
+                <Calendar />
+            </Container>
+            <Footer />
         </div>
     );
 };

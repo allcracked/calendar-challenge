@@ -232,6 +232,7 @@ const thunkGetRemaindersData = (userId: string, month: number, year: number) => 
         mappedRemainders,
         currentCalendar: completeCalendar,
         usingMonth: month,
+        usingYear: year,
     };
     dispatch(saveRemaindersData(remaindersSavingData));
 };

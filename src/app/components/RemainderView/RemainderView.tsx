@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
@@ -12,6 +12,7 @@ import { ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces'
 import history from '../../modules/History/BrowserHistory';
 
 import Loader from '../Loader/Loader';
+import thunkGetRemaindersData from '../../store/Remainders/RemaindersThunks';
 
 interface Props {
     remainder: RemainderInterface;
@@ -20,6 +21,9 @@ interface Props {
 
 const RemainderView: React.FC<Props> = (props: Props) => {
     const userData = useSelector((state: AppState) => state.loggedUser.userData);
+    const usingYear = useSelector((state: AppState) => state.remainders.usingYear);
+    const usingMonth = useSelector((state: AppState) => state.remainders.usingMonth);
+    const dispatch = useDispatch();
     const { remainder, closeModalParentFunction } = props;
     const [weatherDetails, setWeatherDetails] = useState<ForecastByTime>();
     const [weatherMessage, setWeatherMessage] = useState('No weather available.');
@@ -36,6 +40,7 @@ const RemainderView: React.FC<Props> = (props: Props) => {
 
     const deleteRemainder = async (remainderId: string): Promise<void> => {
         await remaindersDAO.removeRemainderByUserAndRemainderId(userData.uid, remainderId);
+        dispatch(thunkGetRemaindersData(userData.uid, usingMonth, usingYear));
         closeModalParentFunction();
     };
 

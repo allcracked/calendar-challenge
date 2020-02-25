@@ -7,8 +7,10 @@ import moment from 'moment';
 import { AppState } from '../../store';
 import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
 import remaindersDAO from '../../modules/DAO/Remainders/Remainders';
+import history from '../../modules/History/BrowserHistory';
 
 import Loader from '../../components/Loader/Loader';
+import Header from '../../components/Header/Header';
 
 interface Props {
     remainderId?: string;
@@ -98,6 +100,8 @@ const CreateRemainder: React.FC<Props> = (props: Props) => {
         } else {
             await remaindersDAO.setRemainderByUser(userData.uid, savingRemainder);
         }
+
+        history.push('/home');
     };
 
     const handleContentChange = (event: any): void => {
@@ -120,6 +124,7 @@ const CreateRemainder: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
+            <Header />
             <h1>{remainderEdit ? 'Editing Remainder' : 'Creating New Remainder'}</h1>
             <Form onSubmit={handleRemainderChanges}>
                 <Form.Group controlId="formContent">

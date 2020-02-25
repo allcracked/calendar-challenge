@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
 
 import { AppState } from '../../store/index';
 
@@ -12,10 +13,13 @@ import openWeatherApi from '../../modules/OpenWeather/OpenWeatherAPI';
 import remaindersDAO from '../../modules/DAO/Remainders/Remainders';
 import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
 import history from '../../modules/History/BrowserHistory';
+import thunkGetRemaindersData from '../../store/Remainders/RemaindersThunks';
 
 import Loader from '../../components/Loader/Loader';
 import RemainderView from '../../components/RemainderView/RemainderView';
 import Home from '../Home/Home';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 interface Props {
     day?: string;
@@ -25,6 +29,7 @@ const DayView: React.FC<Props> = (props: Props) => {
     const { day } = props;
     const remaindersData = useSelector((state: AppState) => state.remainders);
     const userData = useSelector((state: AppState) => state.loggedUser.userData);
+    const dispatch = useDispatch();
     const [dateToUse, setDateToUse] = useState<FormattedTime>();
     const [todaysWeather, setTodaysWeather] = useState('No weather data available.');
     const [thisDayRemainders, setThisDayRemainders] = useState<RemainderInterface[]>();
@@ -72,13 +77,12 @@ const DayView: React.FC<Props> = (props: Props) => {
         setShowRemainderModal(true);
     };
     const closeRemainderModal = (): void => {
-        console.log('called close function@');
         setShowRemainderModal(false);
     };
 
-    const clearDay = async (): Promise<void> => {
+    const handleClearDay = async (): Promise<void> => {
         await remaindersDAO.removeRemainderByUserAndDay(userData.uid, dateToUse.timestamp);
-        history.push('/home');
+        dispatch(thunkGetRemaindersData(userData.uid, remaindersData.usingMonth, remaindersData.usingYear));
     };
 
     useEffect(() => {
@@ -87,7 +91,7 @@ const DayView: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         if (dateToUse) getThisDateRemainders();
-    }, [dateToUse]);
+    }, [dateToUse, remaindersData]);
 
     useEffect(() => {
         if (thisDayRemainders) {
@@ -100,31 +104,37 @@ const DayView: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            <h1>{moment(dateToUse.fullDate, moment.localeData().longDateFormat('L')).format('dddd, MMMM Do, YYYY')}</h1>
-            <ul>
-                {thisDayRemainders.length > 0 ? (
-                    thisDayRemainders.map(remainder => {
-                        return (
-                            <li key={remainder.startTime}>
-                                Time:&nbsp;
-                                {moment.unix(remainder.startTime).format('HH:mm')}
-                                &nbsp;Remainder:&nbsp;
-                                {remainder.content}
-                                <button type="button" onClick={(): void => openRemainderModal(remainder)}>
-                                    See
-                                </button>
-                            </li>
-                        );
-                    })
-                ) : (
-                    <li>No reaminders for this day.</li>
-                )}
-            </ul>
-            <Button onClick={clearDay}>Clear Day</Button>
+            <Header />
+            <Container>
+                <h1>
+                    {moment(dateToUse.fullDate, moment.localeData().longDateFormat('L')).format('dddd, MMMM Do, YYYY')}
+                </h1>
+                <ul>
+                    {thisDayRemainders.length > 0 ? (
+                        thisDayRemainders.map(remainder => {
+                            return (
+                                <li key={remainder.startTime}>
+                                    Time:&nbsp;
+                                    {moment.unix(remainder.startTime).format('HH:mm')}
+                                    &nbsp;Remainder:&nbsp;
+                                    {remainder.content}
+                                    <button type="button" onClick={(): void => openRemainderModal(remainder)}>
+                                        See
+                                    </button>
+                                </li>
+                            );
+                        })
+                    ) : (
+                        <li>No reaminders for this day.</li>
+                    )}
+                </ul>
+                <Button onClick={handleClearDay}>Clear Day</Button>
 
-            <Modal show={showRemainderModal} onHide={closeRemainderModal}>
-                <RemainderView remainder={activeRemainder} closeModalParentFunction={closeRemainderModal} />
-            </Modal>
+                <Modal show={showRemainderModal} onHide={closeRemainderModal}>
+                    <RemainderView remainder={activeRemainder} closeModalParentFunction={closeRemainderModal} />
+                </Modal>
+            </Container>
+            <Footer />
         </div>
     );
 };

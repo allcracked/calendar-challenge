@@ -80,10 +80,10 @@ firebaseAuth.onAuthStateChanged((firebaseUser: firebase.User) => {
         renderApp();
         history.push('/home');
     } else {
-        store.dispatch(cleanRemaindersData());
-        store.dispatch(cleanLoggedUserData());
         renderApp();
         history.push('/login');
+        store.dispatch(cleanRemaindersData());
+        store.dispatch(cleanLoggedUserData());
     }
 });
 

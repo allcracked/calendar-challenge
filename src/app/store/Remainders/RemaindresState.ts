@@ -5,6 +5,7 @@ const initialRemaindersState: RemaindersState = {
     mappedRemainders: [],
     currentCalendar: [],
     usingMonth: null,
+    usingYear: null,
 };
 
 export default initialRemaindersState;

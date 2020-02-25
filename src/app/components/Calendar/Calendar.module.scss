@@ -1,0 +1,18 @@
+.calendarColumn {
+    width: 40px !important;
+    height: 100px !important;
+    border-top: 1px solid gray;
+    border-left: 1px solid gray;
+}
+
+.lastColumn {
+    border-right: 1px solid gray;
+}
+
+.lastRow {
+    border-bottom: 1px solid gray;
+}
+
+.calendarContainer {
+    border-bottom: 1px solid gray;
+}

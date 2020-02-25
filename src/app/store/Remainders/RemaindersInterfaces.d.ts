@@ -25,6 +25,7 @@ export interface RemaindersState {
     mappedRemainders: RemainderMap;
     currentCalendar: WeekCalendar[];
     usingMonth: number;
+    usingYear: number;
 }
 
 export interface WeekCalendar extends Array<DayCalendar> {

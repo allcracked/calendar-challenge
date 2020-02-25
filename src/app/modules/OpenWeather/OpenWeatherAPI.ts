@@ -107,9 +107,12 @@ class OpenWeatherApi {
                     }
 
                     monthLookingFor = 0;
+                    dayLookingFor = 1;
+                    lookForTime = 0;
+                } else {
+                    dayLookingFor += 1;
+                    lookForTime = 0;
                 }
-                dayLookingFor = 1;
-                lookForTime = 0;
             }
 
             const foundWeather: ForecastByTime =

@@ -15,6 +15,7 @@ const remaindersReducer = handleActions<RemaindersState, ActionsPayloadType>(
                 mappedRemainders: remaindersData.mappedRemainders,
                 currentCalendar: remaindersData.currentCalendar,
                 usingMonth: remaindersData.usingMonth,
+                usingYear: remaindersData.usingYear,
             };
         },
         [CLEAN_REMAINDERS_DATA]: state => {
@@ -24,6 +25,7 @@ const remaindersReducer = handleActions<RemaindersState, ActionsPayloadType>(
                 mappedRemainders: remaindersInitialState.mappedRemainders,
                 currentCalendar: remaindersInitialState.currentCalendar,
                 usingMonth: remaindersInitialState.usingMonth,
+                usingYear: remaindersInitialState.usingYear,
             };
         },
     },
