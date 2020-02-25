@@ -14,7 +14,7 @@ import history from '../../modules/History/BrowserHistory';
 
 import Login from '../Login/Login';
 import Loader from '../../components/Loader/Loader';
-import Home from '../Home/Home';
+import Calendar from '../../components/Calendar/Calendar';
 import DayView from '../DayView/DayView';
 import CreateRemainder from '../CreateRemainder/CreateRemainder';
 
@@ -35,7 +35,7 @@ const renderApp = (): void => {
                 <Switch>
                     <Route exact path="/" component={App} />
                     <Route path="/login" component={Login} />
-                    <Route path="/home" component={Home} />
+                    <Route path="/home" component={Calendar} />
                     <Route
                         path="/day/:date"
                         component={(props: any): ReactElement => <DayView day={props.match.params.date} />}
@@ -47,7 +47,6 @@ const renderApp = (): void => {
                         )}
                     />
                     <Route path="/createRemainder" component={CreateRemainder} />
-                    <Route component={Home} />
                 </Switch>
             </ConnectedRouter>
         </Provider>,

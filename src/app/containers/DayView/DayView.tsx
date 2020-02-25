@@ -17,7 +17,6 @@ import thunkGetRemaindersData from '../../store/Remainders/RemaindersThunks';
 
 import Loader from '../../components/Loader/Loader';
 import RemainderView from '../../components/RemainderView/RemainderView';
-import Home from '../Home/Home';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 
@@ -99,7 +98,6 @@ const DayView: React.FC<Props> = (props: Props) => {
         }
     }, [thisDayRemainders]);
 
-    if (!day) return <Home />;
     if (isLoading) return <Loader />;
 
     return (
