@@ -65,7 +65,7 @@ const RemainderView: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            <Modal.Header closeButton>
+            <Modal.Header closeButton className={`RC${remainder.color}`}>
                 <Modal.Title>
                     <h4>{weatherMessage}</h4>
                     Remainder for&nbsp;

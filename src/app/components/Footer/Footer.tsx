@@ -5,7 +5,7 @@ import Container from 'react-bootstrap/Container';
 
 const Footer: React.FC = () => {
     return (
-        <Navbar fixed="bottom">
+        <Navbar sticky="bottom">
             <Container>
                 <Navbar.Toggle />
                 <Navbar.Collapse>
