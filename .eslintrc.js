@@ -24,7 +24,9 @@ module.exports = {
         'react/jsx-indent-props': ['off'],
         'import/extensions': ['off'],
         'class-methods-use-this': ['off'],
-        "prefer-destructuring": ["error", {"object": true, "array": false}]
+        "prefer-destructuring": ["error", {"object": true, "array": false}],
+        'jsx-a11y/no-static-element-interactions': ["off"],
+        'jsx-a11y/no-noninteractive-element-interactions': ["off"]
     },
     env: {
         browser: true,

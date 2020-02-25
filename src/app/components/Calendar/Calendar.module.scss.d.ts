@@ -2,8 +2,12 @@ declare namespace CalendarModuleScssModule {
     export interface ICalendarModuleScss {
         calendarColumn: string;
         calendarContainer: string;
+        dayNotForMonth: string;
         lastColumn: string;
         lastRow: string;
+        remainderContainer: string;
+        todayColumn: string;
+        weekendColumn: string;
     }
 }
 

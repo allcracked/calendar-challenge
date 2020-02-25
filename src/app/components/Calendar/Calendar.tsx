@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 import { AppState } from '../../store';
 import history from '../../modules/History/BrowserHistory';
@@ -21,20 +23,17 @@ import {
 import Loader from '../Loader/Loader';
 import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
+import RemainderView from '../RemainderView/RemainderView';
 
 import styles from './Calendar.module.scss';
 
-interface Props {
-    month?: number;
-    year?: number;
-}
-
-const Calendar: React.FC<Props> = (props: Props) => {
+const Calendar: React.FC = () => {
     const remaindersData = useSelector((state: AppState) => state.remainders);
     const userData = useSelector((state: AppState) => state.loggedUser.userData);
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
-    const { month, year } = props;
+    const [showRemainderModal, setShowRemainderModal] = useState(false);
+    const [activeRemainder, setActiveRemainder] = useState<RemainderInterface>();
 
     const [fullCalendar, setFullCalendar] = useState<Array<WeekCalendar>>([]);
 
@@ -80,6 +79,14 @@ const Calendar: React.FC<Props> = (props: Props) => {
         }
 
         dispatch(thunkGetRemaindersData(userData.uid, newMonth, newYear));
+    };
+
+    const openRemainderModal = (selectedRemainder: RemainderInterface): void => {
+        setActiveRemainder(selectedRemainder);
+        setShowRemainderModal(true);
+    };
+    const closeRemainderModal = (): void => {
+        setShowRemainderModal(false);
     };
 
     const getWeatherForecast = async (): Promise<void> => {
@@ -141,76 +148,117 @@ const Calendar: React.FC<Props> = (props: Props) => {
         <div>
             <Header />
             <Container className={styles.calendarContainer}>
-                <button type="button" onClick={handleOneMonthBackward}>
-                    Previous Month
-                </button>
-                <h3>
-                    {moment()
-                        .year(remaindersData.usingYear)
-                        .month(remaindersData.usingMonth)
-                        .format('MMMM YYYY')}
-                </h3>
-                <button type="button" onClick={handleOneMonthForward}>
-                    Next Month
-                </button>
                 <Row>
-                    <Col>Sunday</Col>
-                    <Col>Monday</Col>
-                    <Col>Tuesday</Col>
-                    <Col>Wednesday</Col>
-                    <Col>Thursday</Col>
-                    <Col>Friday</Col>
-                    <Col>Saturday</Col>
+                    <Button variant="link" onClick={handleOneMonthBackward}>
+                        &lt;
+                    </Button>
+                    &nbsp;&nbsp;
+                    <h2>
+                        {moment()
+                            .year(remaindersData.usingYear)
+                            .month(remaindersData.usingMonth)
+                            .format('MMMM YYYY')}
+                    </h2>
+                    &nbsp;&nbsp;
+                    <Button variant="link" onClick={handleOneMonthForward}>
+                        &gt;
+                    </Button>
+                </Row>
+                <br />
+                <Row className="text-center">
+                    <Col>
+                        <h5>Sunday</h5>
+                    </Col>
+                    <Col>
+                        <h5>Monday</h5>
+                    </Col>
+                    <Col>
+                        <h5>Tuesday</h5>
+                    </Col>
+                    <Col>
+                        <h5>Wednesday</h5>
+                    </Col>
+                    <Col>
+                        <h5>Thursday</h5>
+                    </Col>
+                    <Col>
+                        <h5>Friday</h5>
+                    </Col>
+                    <Col>
+                        <h5>Saturday</h5>
+                    </Col>
                 </Row>
                 {fullCalendar.map((calendarWeek: WeekCalendar, index) => {
                     return (
-                        <Row
-                            key={`${index}${moment.now()}`}
-                            className={index === calendarWeek.length - 1 ? styles.lastRow : ''}
-                        >
+                        <Row key={index} className={index === calendarWeek.length - 1 ? styles.lastRow : ''}>
                             {calendarWeek.map((calendarDay: DayCalendar, indexDay: number) => {
                                 let remainderCounter = 1;
                                 return (
-                                    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
                                     <Col
-                                        key={`${indexDay}${moment.now()}`}
-                                        onClick={(): void => handleSelection(calendarDay)}
+                                        key={calendarDay.timestamp}
                                         className={`${styles.calendarColumn} ${
                                             indexDay === 6 ? styles.lastColumn : ''
+                                        } ${indexDay === 6 || indexDay === 0 ? styles.weekendColumn : ''} ${
+                                            moment
+                                                .unix(calendarDay.timestamp)
+                                                .startOf('day')
+                                                .unix() ===
+                                            moment()
+                                                .startOf('day')
+                                                .unix()
+                                                ? styles.todayColumn
+                                                : ''
                                         }`}
                                     >
-                                        {index}
-                                        &nbsp;
-                                        {calendarDay.dayNumber}
-                                        &nbsp;
-                                        <ul>
-                                            {calendarDay.remainders.map((remainderId: string, indexRemainder) => {
-                                                if (remaindersData.remainders) {
-                                                    const remainder = remaindersData.remainders[remainderId];
-                                                    if (remainder) {
-                                                        if (remainderCounter === 3) {
-                                                            return (
-                                                                <li key={`${indexRemainder}${moment.now()}`}>
-                                                                    ...&nbsp;
-                                                                    {calendarDay.remainders.length - 2}
-                                                                    &nbsp;more
-                                                                </li>
-                                                            );
-                                                        }
+                                        <h6
+                                            className={
+                                                moment.unix(calendarDay.timestamp).month() !== remaindersData.usingMonth
+                                                    ? styles.dayNotForMonth
+                                                    : ''
+                                            }
+                                            onClick={(): void => handleSelection(calendarDay)}
+                                        >
+                                            {calendarDay.dayNumber}
+                                            &nbsp;&nbsp;
+                                            <span>View Day</span>
+                                        </h6>
+                                        {calendarDay.remainders.map((remainderId: string, indexRemainder) => {
+                                            if (remaindersData.remainders) {
+                                                const remainder = remaindersData.remainders[remainderId];
+                                                if (remainder) {
+                                                    if (remainderCounter === 3) {
                                                         remainderCounter += 1;
                                                         return (
-                                                            <li key={`${indexRemainder}${moment.now()}`}>
-                                                                {moment.unix(remainder.startTime).format('HH:mm')}
-                                                                &nbsp;
-                                                                {remainder.city}
-                                                            </li>
+                                                            <div
+                                                                key={index}
+                                                                className={styles.remainderContainer}
+                                                                onClick={(): void => handleSelection(calendarDay)}
+                                                            >
+                                                                ...&nbsp;
+                                                                {calendarDay.remainders.length - 2}
+                                                                &nbsp;more
+                                                            </div>
                                                         );
                                                     }
-                                                    return <></>;
+                                                    if (remainderCounter < 3) {
+                                                        remainderCounter += 1;
+                                                        return (
+                                                            <div
+                                                                key={indexRemainder}
+                                                                className={`${styles.remainderContainer} _${remainder.color}`}
+                                                                onClick={(): void => openRemainderModal(remainder)}
+                                                            >
+                                                                {moment.unix(remainder.startTime).format('HH:mm')}
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    return <span key={indexRemainder} />;
                                                 }
-                                                return <></>;
-                                            })}
-                                        </ul>
+                                                return <span key={indexRemainder} />;
+                                            }
+                                            return <span key={indexRemainder} />;
+                                        })}
                                     </Col>
                                 );
                             })}
@@ -218,6 +266,11 @@ const Calendar: React.FC<Props> = (props: Props) => {
                     );
                 })}
             </Container>
+            <Modal show={showRemainderModal} onHide={closeRemainderModal}>
+                <RemainderView remainder={activeRemainder} closeModalParentFunction={closeRemainderModal} />
+            </Modal>
+            <br />
+            <br />
             <Footer />
         </div>
     );

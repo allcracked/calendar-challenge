@@ -1,2 +1,47 @@
 @import 'bootstrap';
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+._FF6666 {
+    border: solid 1px #FF6666 !important;
+    transition: all ease;
+
+    &:hover {
+        background-color: #FF6666 !important;
+    }
+}
+
+._EEEEEE {
+    border: solid 1px #EEEEEE !important;
+    transition: all ease;
+
+    &:hover {
+        background-color: #EEEEEE !important;
+    }
+}
+
+._95E1AD {
+    border: solid 1px #95E1AD !important;
+    transition: all ease;
+
+    &:hover {
+        background-color: #95E1AD !important;
+    }
+}
+
+._43A3EC {
+    border: solid 1px #43A3EC !important;
+    transition: all ease;
+
+    &:hover {
+        background-color: #43A3EC !important;
+    }
+}
+
+._FFFF99 {
+    border: solid 1px #CCCC00 !important;
+    transition: all ease;
+
+    &:hover {
+        background-color: #CCCC00 !important;
+    }
+}

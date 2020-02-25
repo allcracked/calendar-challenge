@@ -1,18 +1,71 @@
 .calendarColumn {
     width: 40px !important;
-    height: 100px !important;
-    border-top: 1px solid gray;
-    border-left: 1px solid gray;
+    height: 123px !important;
+    border-top: 1px solid #DADADA;
+    border-left: 1px solid #DADADA;
+
+    &:hover {
+        background-color: #FAFAFA;
+    }
+
+    & > h6 {
+        margin-top: 5px;
+        cursor: pointer;
+
+        & > span {
+            display: none;
+            color: #AAA;
+        }
+
+        &:hover {
+            & > span {
+                display: inline-flex;
+                right: 5px;
+            }
+        }
+    }
+
+    & > .remainderContainer {
+        border: gray solid 1px;
+        margin-bottom: 3px;
+        padding-left: 5px;
+        border-radius: 2px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: #EEEEEE;
+        }
+    }
+}
+
+.weekendColumn {
+    background-color: #F0F0F0 !important;
+
+    &:hover {
+        background-color: #FAFAFA !important;
+    }
+
+    & > h6 {
+        color: rgb(40, 110, 153);
+    }
+}
+
+.dayNotForMonth {
+    color: #AAAAAA !important;
 }
 
 .lastColumn {
-    border-right: 1px solid gray;
+    border-right: 1px solid #DADADA;
 }
 
 .lastRow {
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid #DADADA;
 }
 
 .calendarContainer {
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid #DADADA;
+}
+
+.todayColumn {
+    background-color: rgba(40, 110, 153, 0.05);
 }

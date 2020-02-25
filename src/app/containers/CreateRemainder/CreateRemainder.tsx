@@ -144,7 +144,7 @@ const CreateRemainder: React.FC<Props> = (props: Props) => {
                             <option value="FF6666">Red</option>
                             <option value="43A3EC">Blue</option>
                             <option value="95E1AD">Green</option>
-                            <option value="EEEEEE">Gray</option>
+                            <option value="FFFF99">Yellow</option>
                         </Form.Control>
                     </Form.Group>
                 </Form.Group>
