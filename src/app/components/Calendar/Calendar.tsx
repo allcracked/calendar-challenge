@@ -15,16 +15,10 @@ import IPInfoAPI from '../../modules/IPInfo/IPInfoAPI';
 import OpenWeatherApiInstance from '../../modules/OpenWeather/OpenWeatherAPI';
 import { ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
 
-import {
-    WeekCalendar,
-    DayCalendar,
-    RemainderMap,
-    RemainderInterface,
-} from '../../store/Remainders/RemaindersInterfaces';
+import { WeekCalendar, DayCalendar, RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
 
 import Loader from '../Loader/Loader';
 import Header from '../Header/Header';
-import Footer from '../Footer/Footer';
 import RemainderView from '../RemainderView/RemainderView';
 
 import styles from './Calendar.module.scss';
@@ -43,7 +37,7 @@ const Calendar: React.FC = () => {
         const locationData = await IPInfoAPI.getLocationData();
         const todaysWeather = await OpenWeatherApiInstance.getForecastForCityByTimestamp(
             locationData.city,
-            moment.now() / 1000 + 3000,
+            moment.now() / 1000 + 300,
         );
         setTodayWeatherData(todaysWeather);
     };

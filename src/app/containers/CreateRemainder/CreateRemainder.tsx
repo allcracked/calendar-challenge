@@ -203,7 +203,7 @@ const CreateRemainder: React.FC<Props> = (props: Props) => {
                 </Row>
                 <Toast
                     show={showErrorAlert}
-                    onClose={() => setShowErrorAlert(false)}
+                    onClose={(): void => setShowErrorAlert(false)}
                     style={{
                         position: 'absolute',
                         bottom: 20,

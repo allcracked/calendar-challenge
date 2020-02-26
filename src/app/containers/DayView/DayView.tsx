@@ -9,14 +9,10 @@ import Card from 'react-bootstrap/Card';
 
 import { AppState } from '../../store/index';
 
-import { ForecastByTime, OpenWeatherApiData } from '../../modules/OpenWeather/OpenWeatherInterfaces';
-import openWeatherApi from '../../modules/OpenWeather/OpenWeatherAPI';
+import { ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
 import remaindersDAO from '../../modules/DAO/Remainders/Remainders';
 import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
-import history from '../../modules/History/BrowserHistory';
 import thunkGetRemaindersData from '../../store/Remainders/RemaindersThunks';
-import { APIIPInfoResponse } from '../../modules/IPInfo/IPInfoInterfaces';
-import IPInfoAPI from '../../modules/IPInfo/IPInfoAPI';
 
 import Loader from '../../components/Loader/Loader';
 import RemainderView from '../../components/RemainderView/RemainderView';
@@ -35,14 +31,12 @@ const DayView: React.FC<Props> = (props: Props) => {
     const userData = useSelector((state: AppState) => state.loggedUser.userData);
     const dispatch = useDispatch();
     const [dateToUse, setDateToUse] = useState<FormattedTime>();
-    const [todaysWeather, setTodaysWeather] = useState<ForecastByTime>();
     const [thisDayRemainders, setThisDayRemainders] = useState<RemainderInterface[]>();
     const [isLoading, setIsLoading] = useState(true);
     const [showRemainderModal, setShowRemainderModal] = useState(false);
     const [activeRemainder, setActiveRemainder] = useState<RemainderInterface>();
 
     const getTimeData = (date: string): FormattedTime => {
-        // @TODO Menthod to get weather for current user's city.
         const slashFormatTime = date.replace(/-/g, '/');
         const returningTime: FormattedTime = {
             year: moment(slashFormatTime, moment.localeData().longDateFormat('L')).year(),
