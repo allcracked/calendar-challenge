@@ -25,4 +25,6 @@ To check the code for linter errors, run:
 npm run lint
 ```
 ### Test the remainder creation
-TODO
+```
+expect('didnt have time to complete this').toBe('unit testing');
+```
