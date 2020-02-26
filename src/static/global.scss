@@ -61,3 +61,36 @@
 .RCFFFF99 {
     background-color: rgba($color: #FFFF99, $alpha: 0.3);
 }
+
+.RMFF6666 {
+    border: 1px solid #FF6666;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba($color: #FF6666, $alpha: 0.3);
+    }
+}
+.RM95E1AD {
+    border: 1px solid #95E1AD;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba($color: #95E1AD, $alpha: 0.3);
+    }
+}
+.RM43A3EC {
+    border: 1px solid #43A3EC;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba($color: #43A3EC, $alpha: 0.3);
+    }
+}
+.RMFFFF99 {
+    border: 1px solid #FFFF99;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba($color: #FFFF99, $alpha: 0.3);
+    }
+}

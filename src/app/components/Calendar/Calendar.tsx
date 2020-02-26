@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import Navbar from 'react-bootstrap/Navbar';
 
 import { AppState } from '../../store';
 import history from '../../modules/History/BrowserHistory';
@@ -271,7 +270,14 @@ const Calendar: React.FC = () => {
             </Modal>
             <br />
             <br />
-            <Footer />
+            <Navbar sticky="bottom">
+                <Container>
+                    <Navbar.Toggle />
+                    <Navbar.Collapse>
+                        <Navbar.Text>Developed by Jose Avilez for Jobsity</Navbar.Text>
+                    </Navbar.Collapse>
+                </Container>
+            </Navbar>
         </div>
     );
 };

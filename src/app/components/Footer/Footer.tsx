@@ -1,11 +1,10 @@
 import React from 'react';
-import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 
 const Footer: React.FC = () => {
     return (
-        <Navbar sticky="bottom">
+        <Navbar fixed="bottom">
             <Container>
                 <Navbar.Toggle />
                 <Navbar.Collapse>

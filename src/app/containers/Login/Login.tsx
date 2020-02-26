@@ -4,9 +4,10 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import Navbar from 'react-bootstrap/Navbar';
 
 import { firebaseAuth } from '../../modules/Firebase/FirebaseApp';
+
+import Footer from '../../components/Footer/Footer';
 
 import styles from './Login.module.scss';
 
@@ -38,14 +39,7 @@ const Login: React.FC = () => {
                     </Col>
                 </Row>
             </Container>
-            <Navbar fixed="bottom">
-                <Container>
-                    <Navbar.Toggle />
-                    <Navbar.Collapse>
-                        <Navbar.Text>Developed by Jose Avilez for Jobsity</Navbar.Text>
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar>
+            <Footer />
         </>
     );
 };

@@ -5,10 +5,11 @@ import moment from 'moment';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import Card from 'react-bootstrap/Card';
 
 import { AppState } from '../../store/index';
 
-import { ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
+import { ForecastByTime, OpenWeatherApiData } from '../../modules/OpenWeather/OpenWeatherInterfaces';
 import openWeatherApi from '../../modules/OpenWeather/OpenWeatherAPI';
 import remaindersDAO from '../../modules/DAO/Remainders/Remainders';
 import { RemainderInterface } from '../../store/Remainders/RemaindersInterfaces';
@@ -21,6 +22,8 @@ import Loader from '../../components/Loader/Loader';
 import RemainderView from '../../components/RemainderView/RemainderView';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+
+import styles from './DayView.module.scss';
 
 interface Props {
     day?: string;
@@ -37,15 +40,6 @@ const DayView: React.FC<Props> = (props: Props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [showRemainderModal, setShowRemainderModal] = useState(false);
     const [activeRemainder, setActiveRemainder] = useState<RemainderInterface>();
-
-    const getTodaysWeatherFromAPI = async (): Promise<void> => {
-        const localizationData: APIIPInfoResponse = await IPInfoAPI.getLocationData();
-        const weatherData: ForecastByTime = await openWeatherApi.getForecastForCityByTimestamp(
-            localizationData.city,
-            moment.now() / 1000 + 3000,
-        );
-        setTodaysWeather(weatherData);
-    };
 
     const getTimeData = (date: string): FormattedTime => {
         // @TODO Menthod to get weather for current user's city.
@@ -88,7 +82,6 @@ const DayView: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         if (thisDayRemainders) {
-            getTodaysWeatherFromAPI();
             setIsLoading(false);
         }
     }, [thisDayRemainders]);
@@ -115,28 +108,42 @@ const DayView: React.FC<Props> = (props: Props) => {
                 <h1>
                     {moment(dateToUse.fullDate, moment.localeData().longDateFormat('L')).format('dddd, MMMM Do, YYYY')}
                 </h1>
-                <ul>
-                    {thisDayRemainders.length > 0 ? (
-                        thisDayRemainders.map(remainder => {
-                            return (
-                                <li key={remainder.startTime}>
-                                    Time:&nbsp;
-                                    {moment.unix(remainder.startTime).format('HH:mm')}
+                <br />
+                {thisDayRemainders.length > 0 ? (
+                    thisDayRemainders.map(remainder => {
+                        return (
+                            <Card
+                                key={remainder.startTime}
+                                onClick={(): void => openRemainderModal(remainder)}
+                                className={`${styles.remainderCard} RM${remainder.color}`}
+                            >
+                                <Card.Body>
+                                    <h5>
+                                        {moment.unix(remainder.startTime).format('HH:mm')}
+                                        &nbsp;
+                                        {remainder.city}
+                                    </h5>
                                     &nbsp;Remainder:&nbsp;
                                     {remainder.content}
-                                    <button type="button" onClick={(): void => openRemainderModal(remainder)}>
-                                        See
-                                    </button>
-                                </li>
-                            );
-                        })
-                    ) : (
-                        <li>No reaminders for this day.</li>
-                    )}
-                </ul>
-                <Button onClick={handleClearDay}>Clear Day</Button>
+                                </Card.Body>
+                            </Card>
+                        );
+                    })
+                ) : (
+                    <h5 className={`text-center ${styles.noRemaindersFound}`}>
+                        There aren&apos;t remainders for this day
+                    </h5>
+                )}
 
-                <Modal show={showRemainderModal} onHide={closeRemainderModal}>
+                {thisDayRemainders.length > 0 ? (
+                    <Button variant="danger" onClick={handleClearDay}>
+                        Clear Day
+                    </Button>
+                ) : (
+                    ''
+                )}
+
+                <Modal show={showRemainderModal} onHide={closeRemainderModal} centered>
                     <RemainderView remainder={activeRemainder} closeModalParentFunction={closeRemainderModal} />
                 </Modal>
             </Container>
@@ -154,4 +161,8 @@ interface FormattedTime {
     dayWeekNumber: number;
     fullDate: string;
     timestamp: number;
+}
+
+interface RemaindersWithForecast extends RemainderInterface {
+    forecast?: ForecastByTime;
 }
