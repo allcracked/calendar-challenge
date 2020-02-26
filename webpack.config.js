@@ -1,4 +1,4 @@
-const webpack =require('webpack');
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -8,51 +8,55 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
 const webpackConfig = {
     mode: isDevelopment ? 'development' : 'production',
-    devtool: "eval-source-map",
+    devtool: 'eval-source-map',
     entry: {
         app: path.join(__dirname, './src/app/containers/App/App.tsx'),
-
     },
     output: {
         path: path.resolve(__dirname, './build'),
-        filename: "[name].js"
+        filename: '[name].[hash].js',
     },
     resolve: {
-        extensions: ["*", ".js", ".ts", ".tsx", ".scss"]
+        extensions: ['*', '.js', '.ts', '.tsx', '.scss'],
     },
     watchOptions: {
         aggregateTimeout: 300,
         poll: 1000,
-        ignored: '/node_modules/'
+        ignored: '/node_modules/',
     },
     devServer: {
         contentBase: path.join(__dirname, 'build'),
         compress: true,
         port: 9000,
-        historyApiFallback: true
+        historyApiFallback: true,
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+        },
     },
 
     plugins: [
         new HtmlWebpackPlugin({
-            title: "Jobsity Calendar",
+            title: 'Jobsity Calendar',
             meta: {
                 charset: 'utf-8',
-                viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'
+                viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
             },
             filename: 'index.html',
             template: './src/static/index.html',
-            hash: true
+            hash: true,
         }),
 
         new MiniCssExtractPlugin({
-            filename: '[name].css',
-            chunkFilename: '[id].css'
+            filename: '[name].[hash].css',
+            chunkFilename: '[id].[hash].css',
         }),
 
         new webpack.WatchIgnorePlugin([/css\.d\.ts$/]),
 
         new DotenvWebpack({
-            path:  path.join(__dirname, `./.env`)
+            path: path.join(__dirname, `./.env`),
         }),
     ],
 
@@ -63,9 +67,9 @@ const webpackConfig = {
                 exclude: /node_modules/,
                 use: [
                     {
-                        loader: "ts-loader"
-                    }
-                ]
+                        loader: 'ts-loader',
+                    },
+                ],
             },
             {
                 test: /\.module\.s?css$/i,
@@ -75,19 +79,19 @@ const webpackConfig = {
                     {
                         loader: '@teamsupercell/typings-for-css-modules-loader',
                         options: {
-                            formatter: 'prettier'
-                        }
+                            formatter: 'prettier',
+                        },
                     },
                     {
                         loader: 'css-loader',
                         options: {
-                            modules: true
-                        }
+                            modules: true,
+                        },
                     },
                     {
-                        loader: 'sass-loader'
-                    }
-                ]
+                        loader: 'sass-loader',
+                    },
+                ],
             },
             {
                 test: /\.s?css$/i,
@@ -96,14 +100,14 @@ const webpackConfig = {
                 use: [
                     isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
                     {
-                        loader: 'css-loader'
+                        loader: 'css-loader',
                     },
                     {
-                        loader: 'sass-loader'
-                    }
-                ]
+                        loader: 'sass-loader',
+                    },
+                ],
             },
-        ]
+        ],
     },
 };
 
