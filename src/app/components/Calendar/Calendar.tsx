@@ -11,6 +11,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import { AppState } from '../../store';
 import history from '../../modules/History/BrowserHistory';
 import thunkGetRemaindersData from '../../store/Remainders/RemaindersThunks';
+import IPInfoAPI from '../../modules/IPInfo/IPInfoAPI';
+import OpenWeatherApiInstance from '../../modules/OpenWeather/OpenWeatherAPI';
+import { ForecastByTime } from '../../modules/OpenWeather/OpenWeatherInterfaces';
 
 import {
     WeekCalendar,
@@ -33,16 +36,30 @@ const Calendar: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [showRemainderModal, setShowRemainderModal] = useState(false);
     const [activeRemainder, setActiveRemainder] = useState<RemainderInterface>();
-
     const [fullCalendar, setFullCalendar] = useState<Array<WeekCalendar>>([]);
+    const [todayWeatherData, setTodayWeatherData] = useState<ForecastByTime>();
+
+    const getTodaysWeather = async (): Promise<void> => {
+        const locationData = await IPInfoAPI.getLocationData();
+        const todaysWeather = await OpenWeatherApiInstance.getForecastForCityByTimestamp(
+            locationData.city,
+            moment.now() / 1000 + 3000,
+        );
+        setTodayWeatherData(todaysWeather);
+    };
 
     useEffect(() => {
         if (remaindersData.currentCalendar.length > 0) {
             setFullCalendar(remaindersData.currentCalendar);
-            setIsLoading(false);
-            // getWeatherForecast();
+            getTodaysWeather();
         }
     }, [remaindersData]);
+
+    useEffect(() => {
+        if (todayWeatherData !== undefined) {
+            setIsLoading(false);
+        }
+    }, [todayWeatherData]);
 
     useEffect(() => {
         if (remaindersData && remaindersData.usingYear) {
@@ -88,59 +105,6 @@ const Calendar: React.FC = () => {
         setShowRemainderModal(false);
     };
 
-    const getWeatherForecast = async (): Promise<void> => {
-        let todaysYearNumber = moment().year();
-        let todaysMonthNumber = moment().month();
-        let todaysDayNumber = moment().date();
-
-        const next5DaysMappedRemainders: RemainderMap = [];
-
-        let completed5Days = false;
-        let dayCounter = 0;
-        while (!completed5Days) {
-            if (
-                remaindersData.mappedRemainders[todaysYearNumber] &&
-                remaindersData.mappedRemainders[todaysYearNumber][todaysMonthNumber] &&
-                remaindersData.mappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber]
-            ) {
-                next5DaysMappedRemainders[todaysYearNumber] = next5DaysMappedRemainders[todaysYearNumber] || [];
-                next5DaysMappedRemainders[todaysYearNumber][todaysMonthNumber] =
-                    next5DaysMappedRemainders[todaysYearNumber][todaysMonthNumber] || [];
-                next5DaysMappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber] = [];
-                next5DaysMappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber][0] =
-                    remaindersData.mappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber][0][0];
-                const remainder: RemainderInterface =
-                    remaindersData.remainders[
-                        remaindersData.mappedRemainders[todaysYearNumber][todaysMonthNumber][todaysDayNumber][0][0]
-                    ];
-                // openWeatherAPI.getForecastForCityByTimestamp(remainder.city, remainder.startTime).then(data => {});
-            }
-
-            if (
-                todaysDayNumber ===
-                moment()
-                    .endOf('month')
-                    .date()
-            ) {
-                todaysDayNumber = 1;
-                if (
-                    todaysMonthNumber ===
-                    moment()
-                        .endOf('year')
-                        .month()
-                ) {
-                    todaysMonthNumber = 1;
-                    todaysYearNumber += 1;
-                }
-            } else {
-                todaysDayNumber += 1;
-            }
-
-            if (dayCounter === 5) completed5Days = true;
-            dayCounter += 1;
-        }
-    };
-
     if (isLoading) return <Loader />;
 
     return (
@@ -162,6 +126,13 @@ const Calendar: React.FC = () => {
                     <Button variant="link" onClick={handleOneMonthForward}>
                         &gt;
                     </Button>
+                    &nbsp;&nbsp;&nbsp;
+                    <h6>
+                        Today: &nbsp;
+                        {todayWeatherData
+                            ? `${todayWeatherData.temperature}\u2103 ${todayWeatherData.weatherCondition} in ${todayWeatherData.cityName}`
+                            : ''}
+                    </h6>
                 </Row>
                 <br />
                 <Row className="text-center">
